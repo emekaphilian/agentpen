@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgentPen � AI Assurance Platform</title>
+  <style>
+    :root { --bg:#060816; --panel:#11172f; --border:#26314d; --text:#f4f7ff; --muted:#8a94b7; --accent:#7c8cff; --success:#4cd97b; --warn:#ffb84d; --danger:#ff6b6b; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#060816,#0f172f);color:var(--text);min-height:100vh;padding:24px}
+    .shell{max-width:1200px;margin:0 auto;background:rgba(17,23,47,0.96);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+    .top{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02)}
+    .title{font-size:1.2rem;font-weight:700}
+    .subtitle{color:var(--muted);margin-top:4px;font-size:.95rem}
+    .row{display:grid;grid-template-columns:320px 1fr;gap:0}
+    .sidebar{padding:24px;border-right:1px solid var(--border);background:rgba(255,255,255,0.02)}
+    .nav{display:flex;flex-direction:column;gap:10px}
+    .nav button{width:100%;text-align:left;padding:12px 14px;border:1px solid var(--border);background:transparent;color:var(--text);border-radius:12px}
+    .nav button.active{background:rgba(124,140,255,0.18);border-color:rgba(124,140,255,0.3);color:#fff}
+    .content{padding:24px;display:flex;flex-direction:column;gap:16px}
+    .view{display:none}
+    .view.active{display:block}
+    .panel{border:1px solid var(--border);border-radius:18px;padding:18px;background:rgba(255,255,255,0.03)}
+    .grid{display:grid;gap:16px}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    label{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#0b1228;color:var(--text)}
+    button{cursor:pointer;border:0;border-radius:999px;padding:10px 14px;font-weight:600}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),#5667ff);color:white}
+    .btn-secondary{background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--border)}
+    .chip{display:inline-block;padding:6px 10px;border-radius:999px;font-size:.78rem;margin-right:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border)}
+    .chip.good{color:var(--success)}
+    .chip.warn{color:var(--warn)}
+    .chip.bad{color:var(--danger)}
+    .terminal{background:#020612;border:1px solid var(--border);border-radius:14px;padding:12px;min-height:180px;max-height:260px;overflow:auto;font-family:Consolas,monospace;font-size:.9rem;line-height:1.6}
+    .muted{color:var(--muted)}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .stat{padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,0.03)}
+    .stat strong{font-size:1.2rem;display:block;margin-top:4px}
+    @media(max-width:900px){.row{grid-template-columns:1fr}.sidebar{border-right:none;border-bottom:1px solid var(--border)}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top">
+      <div>
+        <div class="title">AgentPen AI Assurance Platform</div>
+        <div class="subtitle">Evidence-first evaluations for AI systems, with GovernanceOS handoff.</div>
+      </div>
+      <div class="chip good">Backend connected</div>
+    </div>
+    <div class="row">
+      <aside class="sidebar">
+        <div class="nav">
+          <button class="active" data-view="overview">Overview</button>
+          <button data-view="evaluations">Evaluations</button>
+          <button data-view="evidence">Evidence</button>
+          <button data-view="reports">Reports</button>
+        </div>
+      </aside>
+      <main class="content">
+        <section id="view-overview" class="view">
+          <div class="panel">
+            <div class="stats">
+              <div class="stat"><span class="muted">Assurance engines</span><strong>6</strong></div>
+              <div class="stat"><span class="muted">Evidence items</span><strong id="evidence-count">0</strong></div>
+              <div class="stat"><span class="muted">Latest risk</span><strong id="risk-band">�</strong></div>
+            </div>
+          </div>
+        </section>
+        <section id="view-evaluations" class="view active">
+          <div class="panel">
+            <div class="field">
+              <label>Target endpoint URL</label>
+              <input id="target-url" value="https://example.com" />
+            </div>
+            <div class="field">
+              <label>API key (optional)</label>
+              <input id="api-key" placeholder="Bearer token" />
+            </div>
+            <div class="grid" style="grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="field">
+                <label>Backend URL</label>
+                <input id="backend-url" value="http://localhost:8080" />
+              </div>
+              <div class="field">
+                <label>Assurance pack</label>
+                <select id="probe-sel">
+                  <option value="all">All probes</option>
+                  <option value="critical">Critical only</option>
+                  <option value="high">High + critical</option>
+                  <option value="AP-001">AP-001 � Prompt injection</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid" style="grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="field">
+                <label>Concurrency</label>
+                <select id="concurrency"><option value="1">1</option><option value="4" selected>4</option><option value="8">8</option></select>
+              </div>
+              <div class="field">
+                <label>Timeout (s)</label>
+                <input id="timeout-val" type="number" value="30" />
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn-primary" id="run-btn" onclick="runScan()">Run Evaluation</button>
+              <button class="btn-secondary" onclick="runPreflight()">Check connectivity</button>
+            </div>
+            <div id="preflight-status" class="muted" style="margin-top:12px;"></div>
+          </div>
+          <div class="panel">
+            <div class="muted" style="margin-bottom:8px;">Evaluation log</div>
+            <div id="scan-log" class="terminal"></div>
+          </div>
+        </section>
+        <section id="view-evidence" class="view">
+          <div class="panel">
+            <div id="evidence-summary" class="muted">The latest evidence report will appear here after a scan completes.</div>
+            <div id="evidence-list" style="margin-top:12px;display:grid;gap:10px;"></div>
+          </div>
+        </section>
+        <section id="view-reports" class="view">
+          <div class="panel">
+            <div id="report-summary" class="muted">Export-ready reports will be generated from the scan results.</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script>
+    let lastReport = null;
+    let currentJobId = null;
+    let pollTimer = null;
+
+    function showView(name){
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById('view-' + name).classList.add('active');
+      document.querySelector('.nav button[data-view="' + name + '"]').classList.add('active');
+    }
+
+    function log(msg, cls=''){
+      const logEl = document.getElementById('scan-log');
+      const ts = new Date().toLocaleTimeString();
+      logEl.innerHTML += `<div class='${cls}'>[${ts}] ${msg}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    async function runPreflight(){
+      const backend = document.getElementById('backend-url').value.trim();
+      const target = document.getElementById('target-url').value.trim();
+      const apiKey = document.getElementById('api-key').value.trim();
+      const status = document.getElementById('preflight-status');
+      status.textContent = 'Checking reachability�';
+      try{
+        const res = await fetch(`${backend}/preflight`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({target_url: target, api_key: apiKey || null})});
+        const data = await res.json();
+        status.textContent = data.ok ? `? ${data.message}` : `? ${data.message}`;
+      } catch (e) {
+        status.textContent = 'Unable to reach the backend.';
+      }
+    }
+
+    async function runScan(){
+      const backend = document.getElementById('backend-url').value.trim();
+      const target = document.getElementById('target-url').value.trim();
+      const apiKey = document.getElementById('api-key').value.trim();
+      const probeSel = document.getElementById('probe-sel').value;
+      const concurrency = parseInt(document.getElementById('concurrency').value, 10);
+      const timeout = parseInt(document.getElementById('timeout-val').value, 10);
+      const runBtn = document.getElementById('run-btn');
+      if (!target) { alert('Enter a target URL first.'); return; }
+      runBtn.disabled = true;
+      runBtn.textContent = 'Running�';
+      document.getElementById('scan-log').innerHTML = '';
+      log('Starting scan�');
+      const payload = { target_url: target, api_key: apiKey || null, concurrency, timeout };
+      if (probeSel !== 'all' && !probeSel.startsWith('AP-')) payload.severity_filter = probeSel === 'critical' ? 'critical' : 'high';
+      if (probeSel.startsWith('AP-')) payload.probe_ids = [probeSel];
+      try{
+        const res = await fetch(`${backend}/api/v1/scans`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+        const data = await res.json();
+        currentJobId = data.job_id;
+        log(`Queued job ${currentJobId}`);
+        pollJob(backend, currentJobId);
+      } catch (e) {
+        log(`Error: ${e.message}`, 'bad');
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run Evaluation';
+      }
+    }
+
+    function renderEvidence(report){
+      const summary = document.getElementById('evidence-summary');
+      const list = document.getElementById('evidence-list');
+      const reportSummary = document.getElementById('report-summary');
+      if (!report) {
+        summary.textContent = 'No report available yet.';
+        list.innerHTML = '';
+        reportSummary.textContent = 'No report available yet.';
+        return;
+      }
+      const findings = Array.isArray(report.findings) ? report.findings : [];
+      const summaryText = `${report.scan_status || 'Completed'} · ${report.summary?.finding_count || 0} findings · risk ${report.summary?.risk_band || 'UNKNOWN'}`;
+      summary.innerHTML = `<strong>${summaryText}</strong><div class="muted" style="margin-top:6px;">Target: ${report.target_url || 'n/a'}</div>`;
+      reportSummary.innerHTML = `<strong>${summaryText}</strong><div class="muted" style="margin-top:6px;">Generated ${report.generated_at || 'n/a'}</div>`;
+      list.innerHTML = findings.length ? findings.slice(0, 6).map(item => `
+        <div class="panel" style="padding:12px;">
+          <div class="chip ${item.severity === 'critical' ? 'bad' : item.severity === 'high' ? 'warn' : 'good'}">${item.severity || 'info'}</div>
+          <div style="margin-top:8px;font-weight:600;">${item.probe_name || item.probe_id || 'Finding'}</div>
+          <div class="muted" style="margin-top:4px;">${(item.evidence || item.verdict || 'No details').toString().slice(0, 180)}</div>
+        </div>
+      `).join('') : '<div class="muted">No findings were surfaced in this run.</div>';
+    }
+
+    async function pollJob(backend, jobId){
+      if (!jobId) return;
+      try{
+        const res = await fetch(`${backend}/api/v1/scans/${jobId}`);
+        const job = await res.json();
+        if (job.status === 'completed') {
+          lastReport = job.report;
+          document.getElementById('evidence-count').textContent = String(lastReport?.summary?.finding_count || 0);
+          document.getElementById('risk-band').textContent = lastReport?.summary?.risk_band || '�';
+          renderEvidence(lastReport);
+          log(`Completed with ${lastReport?.summary?.finding_count || 0} findings`, 'good');
+          showView('evidence');
+          document.getElementById('run-btn').disabled = false;
+          document.getElementById('run-btn').textContent = 'Run Evaluation';
+          return;
+        }
+        if (job.status === 'failed') {
+          log(`Failed: ${job.error || 'unknown error'}`, 'bad');
+          document.getElementById('run-btn').disabled = false;
+          document.getElementById('run-btn').textContent = 'Run Evaluation';
+          return;
+        }
+        log(`Status: ${job.status}`);
+        if (pollTimer) clearTimeout(pollTimer);
+        pollTimer = setTimeout(() => pollJob(backend, jobId), 1500);
+      } catch (e) {
+        log(`Polling error: ${e.message}`, 'warn');
+        if (pollTimer) clearTimeout(pollTimer);
+        pollTimer = setTimeout(() => pollJob(backend, jobId), 2000);
+      }
+    }
+
+    document.querySelectorAll('.nav button').forEach(btn => btn.addEventListener('click', () => showView(btn.dataset.view)));
+    log('AgentPen UI ready');
+  </script>
+</body>
+</html>
