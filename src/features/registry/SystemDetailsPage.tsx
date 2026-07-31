@@ -1,22 +1,35 @@
-import { useParams, Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { fetchSystemDetails } from '../../services/api/systems'
-import type { SystemDetails } from '../../types'
+import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { getSystemById } from '../../services/api/registry'
+import type { AISystem } from '../../types'
 
 export default function SystemDetailsPage() {
   const { systemId } = useParams()
-  const { data, isLoading, error } = useQuery<SystemDetails>({
-    queryKey: ['system', systemId],
-    queryFn: () => fetchSystemDetails(systemId!),
-    enabled: Boolean(systemId)
-  })
+  const [system, setSystem] = useState<AISystem | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (!systemId) {
+      setIsLoading(false)
+      return
+    }
+
+    const loadSystem = async () => {
+      setIsLoading(true)
+      const data = await getSystemById(systemId)
+      setSystem(data ?? null)
+      setIsLoading(false)
+    }
+
+    void loadSystem()
+  }, [systemId])
 
   return (
     <main className="page-shell">
       <div className="page-header">
         <div>
           <p className="eyebrow">System details</p>
-          <h1>{data?.name ?? 'System details'}</h1>
+          <h1>{system?.name ?? 'System details'}</h1>
         </div>
         <Link to="/systems" className="button button-secondary">
           Back to systems
@@ -25,36 +38,40 @@ export default function SystemDetailsPage() {
 
       <section className="card">
         {isLoading && <div className="status-message">Loading system…</div>}
-        {error && <div className="status-message error">Error loading system details.</div>}
-        {!isLoading && !error && data && (
+        {!isLoading && !system && <div className="status-message error">System not found.</div>}
+        {!isLoading && system && (
           <div className="details-grid">
             <div>
               <p className="detail-label">System ID</p>
-              <p>{data.id}</p>
+              <p>{system.id}</p>
             </div>
             <div>
-              <p className="detail-label">Target</p>
-              <p>{data.target_url}</p>
+              <p className="detail-label">Owner</p>
+              <p>{system.owner}</p>
             </div>
             <div>
               <p className="detail-label">Status</p>
-              <p>{data.status}</p>
+              <p>{system.status}</p>
             </div>
             <div>
-              <p className="detail-label">Risk score</p>
-              <p>{data.risk_score}%</p>
+              <p className="detail-label">Deployment</p>
+              <p>{system.deploymentType}</p>
+            </div>
+            <div>
+              <p className="detail-label">Target</p>
+              <p>{system.targetUrl}</p>
+            </div>
+            <div>
+              <p className="detail-label">Risk level</p>
+              <p>{system.riskLevel}</p>
             </div>
             <div className="full-width">
-              <p className="detail-label">Findings</p>
-              <div className="finding-list">
-                {data.findings.map((finding) => (
-                  <article key={finding.id} className="finding-card">
-                    <h2>{finding.title}</h2>
-                    <p>{finding.description}</p>
-                    <p className="finding-meta">Severity: {finding.severity}</p>
-                  </article>
-                ))}
-              </div>
+              <p className="detail-label">Description</p>
+              <p>{system.description}</p>
+            </div>
+            <div className="full-width">
+              <p className="detail-label">Tags</p>
+              <div>{system.tags.join(', ')}</div>
             </div>
           </div>
         )}
