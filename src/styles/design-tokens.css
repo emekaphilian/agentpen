@@ -1,0 +1,64 @@
+:root {
+  --color-bg: #07070f;
+  --color-surface: #0b1120;
+  --color-surface-soft: rgba(15, 23, 42, 0.88);
+  --color-border: rgba(148, 163, 184, 0.16);
+  --color-border-strong: rgba(148, 163, 184, 0.24);
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-soft: rgba(226, 232, 240, 0.82);
+  --color-primary: #7c78f2;
+  --color-primary-soft: #818cf8;
+  --color-primary-strong: #6366f1;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #f97316;
+  --color-info: #38bdf8;
+  --color-overlay: rgba(9, 13, 29, 0.72);
+
+  --font-family-sans: Geist, Inter, system-ui, sans-serif;
+
+  --font-size-xxs: 0.69rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.0625rem;
+  --font-size-xl: 1.125rem;
+  --font-size-2xl: 1.25rem;
+  --font-size-3xl: 1.5rem;
+  --font-size-4xl: 1.75rem;
+
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.25rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+
+  --shadow-sm: 0 10px 26px rgba(15, 23, 42, 0.18);
+  --shadow-md: 0 20px 45px rgba(15, 23, 42, 0.24);
+  --shadow-lg: 0 32px 80px rgba(15, 23, 42, 0.28);
+
+  --transition-duration: 180ms;
+  --transition-easing: cubic-bezier(0.16, 0.8, 0.24, 1);
+
+  --z-dropdown: 50;
+  --z-overlay: 60;
+  --z-modal: 70;
+  --z-drawer: 75;
+  --z-tooltip: 80;
+  --z-toast: 90;
+
+  --breakpoint-xs: 420px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1120px;
+  --breakpoint-xl: 1440px;
+}
