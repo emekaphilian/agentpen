@@ -1,9 +1,9 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
-import HomePage from './pages/HomePage'
-import SystemsPage from './pages/SystemsPage'
-import SystemDetailsPage from './pages/SystemDetailsPage'
+import HomePage from '../features/overview/HomePage'
+import SystemsPage from '../features/registry/SystemsPage'
+import SystemDetailsPage from '../features/registry/SystemDetailsPage'
 
-function App() {
+export default function Router() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
@@ -13,5 +13,3 @@ function App() {
     </Routes>
   )
 }
-
-export default App

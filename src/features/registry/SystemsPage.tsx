@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { fetchSystems, SystemSummary } from '../services/systems'
+import { fetchSystems } from '../../services/api/systems'
+import type { SystemSummary } from '../../types'
 
 export default function SystemsPage() {
   const { data = [], isLoading, error } = useQuery<SystemSummary[], Error>({

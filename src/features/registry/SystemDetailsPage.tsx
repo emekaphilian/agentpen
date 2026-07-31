@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { fetchSystemDetails, SystemDetails } from '../services/systems'
+import { fetchSystemDetails } from '../../services/api/systems'
+import type { SystemDetails } from '../../types'
 
 export default function SystemDetailsPage() {
   const { systemId } = useParams()
