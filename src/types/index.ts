@@ -35,3 +35,67 @@ export interface AISystem {
   createdAt: string
   updatedAt: string
 }
+
+export type AssurancePillar = 'Security' | 'Safety' | 'Reliability' | 'Fairness' | 'Domain'
+export type EvaluationStatus = 'draft' | 'in_progress' | 'completed' | 'failed'
+
+export interface EvaluationEvidence {
+  id: string
+  title: string
+  description: string
+  source: string
+  recordedAt: string
+}
+
+export interface Recommendation {
+  id: string
+  title: string
+  description: string
+  priority: 'low' | 'medium' | 'high'
+}
+
+export interface AssuranceScore {
+  overall: number
+  security: number
+  safety: number
+  reliability: number
+  fairness: number
+  domain: number
+}
+
+export interface Evaluation {
+  id: string
+  name: string
+  description: string
+  aiSystemName: string
+  aiSystemId: string
+  modelVersion: string
+  deploymentContext: string
+  pillars: AssurancePillar[]
+  status: EvaluationStatus
+  summary: string
+  assuranceScore: AssuranceScore
+  evidence: EvaluationEvidence[]
+  recommendations: Recommendation[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface EvaluationCreateInput {
+  name: string
+  description: string
+  aiSystemName: string
+  aiSystemId: string
+  modelVersion: string
+  deploymentContext: string
+  pillars: AssurancePillar[]
+}
+
+export interface EvaluationSuite {
+  id: string
+  name: string
+  description: string
+  evaluations: Evaluation[]
+  createdAt: string
+  updatedAt: string
+}

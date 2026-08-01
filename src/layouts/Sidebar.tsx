@@ -4,7 +4,7 @@ const navItems = [
   { label: 'New Scan', to: '/', icon: '⚡' },
   { label: 'Results', to: '/systems', icon: '📋' },
   { label: 'Probe Library', to: '/systems', icon: '🧪' },
-  { label: 'Last Report', to: '/systems', icon: '📄' },
+  { label: 'Evaluation Engine', to: '/evaluations', icon: '🧭' },
   { label: 'Scan History', to: '/systems', icon: '🕐' }
 ]
 
