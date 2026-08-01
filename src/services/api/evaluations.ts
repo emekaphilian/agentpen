@@ -1,5 +1,6 @@
 import { get, post } from './client'
-import type { Evaluation, EvaluationCreateInput } from '../../types'
+import { buildLifecycleState } from './evaluationLifecycle'
+import { EvaluationStatus, type Evaluation, type EvaluationCreateInput } from '../../types'
 
 export interface EvaluationServiceState {
   data: Evaluation[]
@@ -25,8 +26,17 @@ const emptyDetailState: EvaluationDetailState = {
   error: null
 }
 
+function applyLifecycle(evaluation: Evaluation): Evaluation {
+  return {
+    ...evaluation,
+    status: evaluation.status ?? EvaluationStatus.Draft,
+    lifecycle: buildLifecycleState(evaluation.status ?? EvaluationStatus.Draft, evaluation.updatedAt, evaluation.createdAt)
+  }
+}
+
 export async function getEvaluations(signal?: AbortSignal): Promise<Evaluation[]> {
-  return get<Evaluation[]>('/evaluations', signal)
+  const data = await get<Evaluation[]>('/evaluations', signal)
+  return data.map((evaluation) => applyLifecycle(evaluation))
 }
 
 export async function fetchEvaluations(signal?: AbortSignal): Promise<EvaluationServiceState> {
@@ -43,12 +53,14 @@ export async function fetchEvaluations(signal?: AbortSignal): Promise<Evaluation
 }
 
 export async function createEvaluation(input: EvaluationCreateInput, signal?: AbortSignal): Promise<Evaluation> {
-  return post<Evaluation, EvaluationCreateInput>('/evaluations', input, signal)
+  const created = await post<Evaluation, EvaluationCreateInput>('/evaluations', input, signal)
+  return applyLifecycle({ ...created, status: EvaluationStatus.Queued })
 }
 
 export async function getEvaluationById(id: string, signal?: AbortSignal): Promise<Evaluation | null> {
   try {
-    return await get<Evaluation>(`/evaluations/${encodeURIComponent(id)}`, signal)
+    const evaluation = await get<Evaluation>(`/evaluations/${encodeURIComponent(id)}`, signal)
+    return applyLifecycle(evaluation)
   } catch (error) {
     if (error instanceof Error && /not found/i.test(error.message)) {
       return null

@@ -189,6 +189,16 @@ a {
   transition: width 180ms ease-in-out;
 }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.2);
+  color: #e0e7ff;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+}
+
 @media (max-width: 720px) {
   .page-header {
     flex-direction: column;

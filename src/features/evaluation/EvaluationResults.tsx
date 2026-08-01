@@ -1,10 +1,25 @@
-import type { Evaluation } from '../../types'
+import { EvaluationStatus, type Evaluation } from '../../types'
+import { EvaluationCancelled } from './lifecycle/EvaluationCancelled'
+import { EvaluationCompleted } from './lifecycle/EvaluationCompleted'
+import { EvaluationExecution } from './lifecycle/EvaluationExecution'
+import { EvaluationFailed } from './lifecycle/EvaluationFailed'
+import { EvaluationQueue } from './lifecycle/EvaluationQueue'
+import { EvaluationStatusTimeline } from './lifecycle/EvaluationStatusTimeline'
 
 interface EvaluationResultsProps {
   evaluation: Evaluation
 }
 
 export function EvaluationResults({ evaluation }: EvaluationResultsProps) {
+  const lifecycle = evaluation.lifecycle ?? {
+    currentStatus: evaluation.status ?? EvaluationStatus.Draft,
+    progress: 0,
+    steps: [],
+    startedAt: evaluation.createdAt,
+    updatedAt: evaluation.updatedAt,
+    completedAt: null
+  }
+
   return (
     <div className="details-grid">
       <div className="full-width">
@@ -15,7 +30,7 @@ export function EvaluationResults({ evaluation }: EvaluationResultsProps) {
 
       <div>
         <p className="detail-label">Status</p>
-        <p>{evaluation.status}</p>
+        <p className="badge">{lifecycle.currentStatus}</p>
       </div>
       <div>
         <p className="detail-label">Score</p>
@@ -39,6 +54,16 @@ export function EvaluationResults({ evaluation }: EvaluationResultsProps) {
             </span>
           ))}
         </div>
+      </div>
+
+      <div className="full-width">
+        <p className="detail-label">Lifecycle</p>
+        {lifecycle.currentStatus === EvaluationStatus.Completed && <EvaluationCompleted lifecycle={lifecycle} />}
+        {lifecycle.currentStatus === EvaluationStatus.Failed && <EvaluationFailed lifecycle={lifecycle} />}
+        {lifecycle.currentStatus === EvaluationStatus.Cancelled && <EvaluationCancelled lifecycle={lifecycle} />}
+        {(lifecycle.currentStatus === EvaluationStatus.Queued || lifecycle.currentStatus === EvaluationStatus.Initializing) && <EvaluationQueue lifecycle={lifecycle} />}
+        {(lifecycle.currentStatus === EvaluationStatus.Running || lifecycle.currentStatus === EvaluationStatus.CollectingEvidence || lifecycle.currentStatus === EvaluationStatus.CalculatingScores || lifecycle.currentStatus === EvaluationStatus.GeneratingReport) && <EvaluationExecution lifecycle={lifecycle} />}
+        <EvaluationStatusTimeline lifecycle={lifecycle} />
       </div>
 
       <div className="full-width">

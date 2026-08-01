@@ -37,7 +37,35 @@ export interface AISystem {
 }
 
 export type AssurancePillar = 'Security' | 'Safety' | 'Reliability' | 'Fairness' | 'Domain'
-export type EvaluationStatus = 'draft' | 'in_progress' | 'completed' | 'failed'
+
+export enum EvaluationStatus {
+  Draft = 'Draft',
+  Queued = 'Queued',
+  Initializing = 'Initializing',
+  Running = 'Running',
+  CollectingEvidence = 'CollectingEvidence',
+  CalculatingScores = 'CalculatingScores',
+  GeneratingReport = 'GeneratingReport',
+  Completed = 'Completed',
+  Failed = 'Failed',
+  Cancelled = 'Cancelled'
+}
+
+export interface EvaluationLifecycleStep {
+  key: EvaluationStatus
+  title: string
+  description: string
+  completed: boolean
+}
+
+export interface EvaluationLifecycleState {
+  currentStatus: EvaluationStatus
+  progress: number
+  steps: EvaluationLifecycleStep[]
+  startedAt: string | null
+  updatedAt: string
+  completedAt: string | null
+}
 
 export interface EvaluationEvidence {
   id: string
@@ -77,6 +105,7 @@ export interface Evaluation {
   assuranceScore: AssuranceScore
   evidence: EvaluationEvidence[]
   recommendations: Recommendation[]
+  lifecycle?: EvaluationLifecycleState
   createdAt: string
   updatedAt: string
 }
