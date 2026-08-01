@@ -67,6 +67,34 @@ export interface EvaluationLifecycleState {
   completedAt: string | null
 }
 
+export type EvidenceCategory = 'Finding' | 'Control' | 'Observation' | 'TestResult'
+export type EvidenceSeverity = 'low' | 'medium' | 'high' | 'critical'
+export type EvidenceConfidence = 'low' | 'medium' | 'high'
+
+export interface EvidenceArtifact {
+  id: string
+  evaluationId: string
+  title: string
+  description: string
+  assurancePillar: AssurancePillar
+  severity: EvidenceSeverity
+  confidence: EvidenceConfidence
+  timestamp: string
+  metadata: Record<string, string | number | boolean | null>
+}
+
+export interface Evidence extends EvidenceArtifact {
+  category: EvidenceCategory
+  recommendations: Recommendation[]
+}
+
+export interface Recommendation {
+  id: string
+  title: string
+  description: string
+  priority: 'low' | 'medium' | 'high'
+}
+
 export interface EvaluationEvidence {
   id: string
   title: string

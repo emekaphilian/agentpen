@@ -1,4 +1,8 @@
 import { EvaluationStatus, type Evaluation } from '../../types'
+import { useEffect, useState } from 'react'
+import { getMockEvidence } from '../../services/api/evidence'
+import type { Evidence } from '../../types'
+import { EvidenceViewer } from '../evidence/EvidenceViewer'
 import { EvaluationCancelled } from './lifecycle/EvaluationCancelled'
 import { EvaluationCompleted } from './lifecycle/EvaluationCompleted'
 import { EvaluationExecution } from './lifecycle/EvaluationExecution'
@@ -11,6 +15,21 @@ interface EvaluationResultsProps {
 }
 
 export function EvaluationResults({ evaluation }: EvaluationResultsProps) {
+  const [evidence, setEvidence] = useState<Evidence[]>([])
+
+  useEffect(() => {
+    const loadEvidence = async () => {
+      try {
+        const items = await getMockEvidence()
+        setEvidence(items)
+      } catch {
+        setEvidence([])
+      }
+    }
+
+    void loadEvidence()
+  }, [evaluation.id])
+
   const lifecycle = evaluation.lifecycle ?? {
     currentStatus: evaluation.status ?? EvaluationStatus.Draft,
     progress: 0,
@@ -68,14 +87,7 @@ export function EvaluationResults({ evaluation }: EvaluationResultsProps) {
 
       <div className="full-width">
         <p className="detail-label">Evidence</p>
-        <div className="finding-list">
-          {evaluation.evidence.map((item) => (
-            <div key={item.id} className="card" style={{ marginBottom: '0.75rem' }}>
-              <div className="system-name">{item.title}</div>
-              <div className="system-meta">{item.description}</div>
-            </div>
-          ))}
-        </div>
+        <EvidenceViewer evidence={evidence} />
       </div>
 
       <div className="full-width">
