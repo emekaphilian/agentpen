@@ -13,19 +13,13 @@ interface OperationalDashboardProps {
 
 export default function OperationalDashboard({ activeView = 'scan' }: OperationalDashboardProps) {
   return (
-    <div className="app-shell-root">
-      <OperationalSidebar activeItem={activeView} />
-      <div className="main">
-        <OperationalHeader title="New Scan" meta="Configure and run adversarial probes" />
-        <div className="content">
-          <OverviewCards />
-          <NewScanPanel />
-          <ResultsPanel />
-          <ProbeLibrary />
-          <LastReportPanel />
-          <ScanHistoryPanel />
-        </div>
-      </div>
-    </div>
+    <>
+      <OverviewCards />
+      <NewScanPanel />
+      <ResultsPanel />
+      <ProbeLibrary />
+      <LastReportPanel />
+      <ScanHistoryPanel />
+    </>
   )
 }

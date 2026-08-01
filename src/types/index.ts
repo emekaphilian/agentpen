@@ -118,6 +118,54 @@ export interface AssuranceResult {
   recommendations: Recommendation[]
 }
 
+export interface EvaluationMetadata {
+  evaluationId: string
+  aiSystem: string
+  modelVersion: string
+  deploymentContext: string
+  generatedAt: string
+}
+
+export interface ExecutiveSummary {
+  headline: string
+  overview: string
+  highlights: string[]
+}
+
+export interface EvidenceSummary {
+  totalArtifacts: number
+  highSeverityCount: number
+  averageConfidence: number
+  coverage: number
+}
+
+export interface Finding {
+  id: string
+  title: string
+  summary: string
+  severity: 'low' | 'medium' | 'high' | 'critical'
+  pillar: AssurancePillar
+}
+
+export interface FrameworkMapping {
+  framework: string
+  mapping: string
+}
+
+export interface AssuranceReport {
+  id: string
+  evaluationId: string
+  metadata: EvaluationMetadata
+  executiveSummary: ExecutiveSummary
+  pillars: Record<AssurancePillar, AssuranceCategory>
+  overallScore: number
+  riskLevel: RiskLevel
+  evidenceSummary: EvidenceSummary
+  findings: Finding[]
+  recommendations: Recommendation[]
+  frameworkMappings: FrameworkMapping[]
+}
+
 export interface EvaluationEvidence {
   id: string
   title: string
