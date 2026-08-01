@@ -2,6 +2,7 @@ import { EvaluationStatus, type Evaluation } from '../../types'
 import { useEffect, useState } from 'react'
 import { getMockEvidence } from '../../services/api/evidence'
 import type { Evidence } from '../../types'
+import { AssuranceDashboard } from '../assurance/AssuranceDashboard'
 import { EvidenceViewer } from '../evidence/EvidenceViewer'
 import { EvaluationCancelled } from './lifecycle/EvaluationCancelled'
 import { EvaluationCompleted } from './lifecycle/EvaluationCompleted'
@@ -83,6 +84,11 @@ export function EvaluationResults({ evaluation }: EvaluationResultsProps) {
         {(lifecycle.currentStatus === EvaluationStatus.Queued || lifecycle.currentStatus === EvaluationStatus.Initializing) && <EvaluationQueue lifecycle={lifecycle} />}
         {(lifecycle.currentStatus === EvaluationStatus.Running || lifecycle.currentStatus === EvaluationStatus.CollectingEvidence || lifecycle.currentStatus === EvaluationStatus.CalculatingScores || lifecycle.currentStatus === EvaluationStatus.GeneratingReport) && <EvaluationExecution lifecycle={lifecycle} />}
         <EvaluationStatusTimeline lifecycle={lifecycle} />
+      </div>
+
+      <div className="full-width">
+        <p className="detail-label">Assurance scores</p>
+        <AssuranceDashboard evaluationId={evaluation.id} />
       </div>
 
       <div className="full-width">

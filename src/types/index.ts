@@ -19,7 +19,6 @@ export interface SystemDetails extends SystemSummary {
 }
 
 export type DeploymentType = 'cloud' | 'edge' | 'on-prem' | 'hybrid'
-export type RiskLevel = 'low' | 'medium' | 'high' | 'critical'
 export type SystemStatus = 'active' | 'maintenance' | 'draft' | 'archived'
 
 export interface AISystem {
@@ -95,19 +94,36 @@ export interface Recommendation {
   priority: 'low' | 'medium' | 'high'
 }
 
+export type RiskLevel = 'informational' | 'low' | 'medium' | 'high' | 'critical'
+
+export interface ScoreBreakdown {
+  rawScore: number
+  weightedScore: number
+  confidence: number
+  riskLevel: RiskLevel
+  trend: 'up' | 'down' | 'stable'
+}
+
+export interface AssuranceCategory extends ScoreBreakdown {
+  name: AssurancePillar
+}
+
+export interface AssuranceResult {
+  id: string
+  evaluationId: string
+  overallScore: number
+  riskLevel: RiskLevel
+  summary: string
+  categories: AssuranceCategory[]
+  recommendations: Recommendation[]
+}
+
 export interface EvaluationEvidence {
   id: string
   title: string
   description: string
   source: string
   recordedAt: string
-}
-
-export interface Recommendation {
-  id: string
-  title: string
-  description: string
-  priority: 'low' | 'medium' | 'high'
 }
 
 export interface AssuranceScore {
