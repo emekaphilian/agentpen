@@ -26,7 +26,7 @@ export function AssuranceBreakdown({ result }: AssuranceBreakdownProps) {
               </div>
             </div>
             <div className="system-meta" style={{ marginTop: '0.5rem' }}>
-              Risk {category.riskLevel} · Trend {category.trend}
+              Risk {category.riskLevel} · Trend {category.trend} · Evidence support {Math.round(category.confidence * 100)}%
             </div>
           </div>
         ))}

@@ -14,6 +14,8 @@ export function RecommendationSummary({ result }: RecommendationSummaryProps) {
             <div className="system-name">{item.title}</div>
             <div className="system-meta">{item.description}</div>
             <div className="system-meta">Priority: {item.priority}</div>
+            <div className="system-meta">Related pillar: {item.relatedPillar ?? 'General'}</div>
+            <div className="system-meta">Suggested action: {item.suggestedAction ?? 'Review control posture'}</div>
           </div>
         ))}
       </div>

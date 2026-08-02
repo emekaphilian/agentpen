@@ -7,6 +7,7 @@ import OperationalDashboard from '../components/operational/OperationalDashboard
 import EvaluationPage from '../features/evaluation/EvaluationPage'
 import DiscoveryPage from '../features/discovery/DiscoveryPage'
 import EvidencePage from '../features/evidence/EvidencePage'
+import AssurancePage from '../features/assurance/AssurancePage'
 import { AssuranceReportPage } from '../features/reports/AssuranceReportPage'
 
 export default function Router() {
@@ -18,6 +19,7 @@ export default function Router() {
       <Route path="/discovery" element={<DashboardLayout><DiscoveryPage /></DashboardLayout>} />
       <Route path="/evaluations" element={<DashboardLayout><EvaluationPage /></DashboardLayout>} />
       <Route path="/evidence" element={<DashboardLayout><EvidencePage /></DashboardLayout>} />
+      <Route path="/assurance" element={<DashboardLayout><AssurancePage /></DashboardLayout>} />
       <Route path="/reports" element={<DashboardLayout><AssuranceReportPage /></DashboardLayout>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

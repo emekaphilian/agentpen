@@ -15,6 +15,8 @@ export function AssuranceScoreCard({ result }: AssuranceScoreCardProps) {
       <p className="system-meta" style={{ marginTop: '0.75rem' }}>
         {result.summary}
       </p>
+      <p className="system-meta">Confidence {result.confidence}%</p>
+      <p className="system-meta">Deployment recommendation: {result.deploymentDecision.label}</p>
     </div>
   )
 }

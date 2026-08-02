@@ -223,6 +223,33 @@ export interface Recommendation {
   title: string
   description: string
   priority: 'low' | 'medium' | 'high'
+  relatedPillar?: AssurancePillar
+  suggestedAction?: string
+}
+
+export interface DeploymentDecision {
+  label: 'Approved' | 'Approved with Monitoring' | 'Needs Remediation' | 'High Risk' | 'Do Not Deploy'
+  reason: string
+}
+
+export interface StandardsMapping {
+  framework: string
+  mapping: string
+}
+
+export interface RiskMatrix {
+  likelihood: string
+  impact: string
+  overallPosition: string
+}
+
+export interface TrendAnalysis {
+  pillar: AssurancePillar
+  previousScore: number
+  currentScore: number
+  change: number
+  direction: 'up' | 'down' | 'stable'
+  summary: string
 }
 
 export type RiskLevel = 'informational' | 'low' | 'medium' | 'high' | 'critical'
@@ -245,8 +272,13 @@ export interface AssuranceResult {
   overallScore: number
   riskLevel: RiskLevel
   summary: string
+  confidence: number
+  deploymentDecision: DeploymentDecision
   categories: AssuranceCategory[]
   recommendations: Recommendation[]
+  standardsMappings: StandardsMapping[]
+  riskMatrix: RiskMatrix
+  trendAnalysis: TrendAnalysis[]
 }
 
 export interface EvaluationMetadata {

@@ -9,7 +9,8 @@ const navItems = [
 
 const reportItems = [
   { label: 'Evidence', to: '/evidence', icon: '📄' },
-  { label: 'Assurance', to: '/reports', icon: '🕐' }
+  { label: 'Assurance', to: '/assurance', icon: '🕐' },
+  { label: 'Reports', to: '/reports', icon: '📊' }
 ]
 
 export default function Sidebar() {
