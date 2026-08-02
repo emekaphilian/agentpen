@@ -4,8 +4,8 @@ interface OperationalHeaderProps {
 }
 
 export default function OperationalHeader({
-  title = 'New Scan',
-  meta = 'Configure and run adversarial probes'
+  title = 'AI Assurance Laboratory',
+  meta = 'Register AI systems, configure evaluations, review evidence, and generate assurance reports'
 }: OperationalHeaderProps) {
   return (
     <div className="topbar">

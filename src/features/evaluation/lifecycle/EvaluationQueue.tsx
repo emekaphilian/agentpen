@@ -7,8 +7,8 @@ interface EvaluationQueueProps {
 export function EvaluationQueue({ lifecycle }: EvaluationQueueProps) {
   return (
     <div className="status-message">
-      <p className="detail-label">Queue state</p>
-      <h2 className="system-name">{lifecycle.currentStatus}</h2>
+      <p className="detail-label">Lifecycle stage</p>
+      <h2 className="system-name">Queued</h2>
       <div className="progress-bar" aria-label="Evaluation lifecycle progress">
         <div className="progress-fill" style={{ width: `${Math.max(lifecycle.progress, 8)}%` }} />
       </div>

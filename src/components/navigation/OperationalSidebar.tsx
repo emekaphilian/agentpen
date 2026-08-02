@@ -4,11 +4,11 @@ interface OperationalSidebarProps {
 }
 
 const navigationItems = [
-  { id: 'scan', label: 'New Scan', icon: '⚡' },
-  { id: 'results', label: 'Results', icon: '📋' },
-  { id: 'probes', label: 'Probe Library', icon: '🧪' },
-  { id: 'report', label: 'Last Report', icon: '📄' },
-  { id: 'history', label: 'Scan History', icon: '🕐' }
+  { id: 'scan', label: 'Dashboard', icon: '⚡' },
+  { id: 'results', label: 'AI Systems', icon: '📋' },
+  { id: 'probes', label: 'Evaluations', icon: '🧪' },
+  { id: 'report', label: 'Evidence', icon: '📄' },
+  { id: 'history', label: 'Assurance', icon: '🕐' }
 ]
 
 export default function OperationalSidebar({
@@ -21,7 +21,7 @@ export default function OperationalSidebar({
         <div className="logo-name">
           <span>Agent</span>Pen
         </div>
-        <div className="logo-tag">AI agent security platform</div>
+        <div className="logo-tag">AI assurance laboratory</div>
       </div>
       <nav>
         {navigationItems.slice(0, 3).map((item) => (

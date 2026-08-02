@@ -7,17 +7,23 @@ interface OverviewCardsProps {
   resistant?: string | number
   accentColor?: string
   backgroundColor?: string
+  confidence?: string | number
+  riskRating?: string
+  recommendation?: string
 }
 
 export default function OverviewCards({
   score = '0',
   band = 'MINIMAL',
-  description = 'No scan results yet.',
+  description = 'No assurance evidence yet.',
   vulnerable = '0',
   inconclusive = '0',
   resistant = '0',
   accentColor = '#e2e8f0',
-  backgroundColor = 'rgba(34,197,94,0.08)'
+  backgroundColor = 'rgba(34,197,94,0.08)',
+  confidence = '0%',
+  riskRating = 'Pending',
+  recommendation = 'Further Evaluation Required'
 }: OverviewCardsProps) {
   return (
     <div>
@@ -47,7 +53,7 @@ export default function OverviewCards({
         </div>
         <div>
           <div style={{ fontSize: '16px', fontWeight: 600, color: accentColor, marginBottom: '4px' }}>
-            {band} risk
+            {band} assurance
           </div>
           <div style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '10px' }}>
             {description}
@@ -62,7 +68,7 @@ export default function OverviewCards({
 
       <div className="metrics">
         <div className="metric">
-          <div className="metric-label">Risk score</div>
+          <div className="metric-label">Overall Assurance Score</div>
           <div className="metric-val" style={{ color: accentColor }}>
             {score}/100
           </div>

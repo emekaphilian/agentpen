@@ -178,6 +178,16 @@ export default function OperationalDashboard({ activeView = 'scan' }: Operationa
   const overviewDescription = activeEvaluation
     ? `Evaluation ${activeEvaluation.status.toLowerCase()} for ${activeEvaluation.aiSystemName}`
     : 'No evaluation results yet.'
+  const assuranceConfidence = activeEvaluation ? '82%' : '0%'
+  const assuranceRiskRating = band === 'LOW' ? 'Low' : band === 'MEDIUM' ? 'Moderate' : band === 'HIGH' ? 'High' : 'Critical'
+  const deploymentRecommendation = score >= 80 ? 'Ready for Deployment' : score >= 60 ? 'Ready with Conditions' : 'Further Evaluation Required'
+  const pillarSummaries = [
+    { name: 'Security Assurance', score: activeEvaluation?.assuranceScore.security ?? 0, confidence: 'High', status: activeEvaluation ? 'Tracked' : 'Pending', description: 'Control coverage and resilience against adversarial prompts.' },
+    { name: 'Safety Assurance', score: activeEvaluation?.assuranceScore.safety ?? 0, confidence: 'High', status: activeEvaluation ? 'Tracked' : 'Pending', description: 'Behavioral safeguards and harmful-output prevention.' },
+    { name: 'Reliability Assurance', score: activeEvaluation?.assuranceScore.reliability ?? 0, confidence: 'Medium', status: activeEvaluation ? 'Tracked' : 'Pending', description: 'Consistency and stable execution under evaluation.' },
+    { name: 'Fairness Assurance', score: activeEvaluation?.assuranceScore.fairness ?? 0, confidence: 'Medium', status: activeEvaluation ? 'Tracked' : 'Pending', description: 'Outcome balance and equitable treatment across contexts.' },
+    { name: 'Domain Readiness', score: activeEvaluation?.assuranceScore.domain ?? 0, confidence: 'Medium', status: activeEvaluation ? 'Tracked' : 'Pending', description: 'Operational readiness for the target deployment context.' }
+  ]
 
   const handleDraftChange = (changes: Partial<EvaluationCreateInput>) => {
     setDraft((current) => ({ ...current, ...changes }))
@@ -296,7 +306,21 @@ export default function OperationalDashboard({ activeView = 'scan' }: Operationa
 
   return (
     <>
-      <OverviewCards score={score} band={band} description={overviewDescription} vulnerable={vulnerableCount} inconclusive={inconclusiveCount} resistant={resistantCount} accentColor={band === 'CRITICAL' || band === 'HIGH' ? '#f87171' : band === 'MEDIUM' ? '#fbbf24' : '#4ade80'} backgroundColor={band === 'CRITICAL' || band === 'HIGH' ? 'rgba(239,68,68,0.08)' : band === 'MEDIUM' ? 'rgba(245,158,11,0.08)' : 'rgba(34,197,94,0.08)'} />
+      <OverviewCards score={score} band={band} description={overviewDescription} vulnerable={vulnerableCount} inconclusive={inconclusiveCount} resistant={resistantCount} accentColor={band === 'CRITICAL' || band === 'HIGH' ? '#f87171' : band === 'MEDIUM' ? '#fbbf24' : '#4ade80'} backgroundColor={band === 'CRITICAL' || band === 'HIGH' ? 'rgba(239,68,68,0.08)' : band === 'MEDIUM' ? 'rgba(245,158,11,0.08)' : 'rgba(34,197,94,0.08)'} confidence={assuranceConfidence} riskRating={assuranceRiskRating} recommendation={deploymentRecommendation} />
+      <div className="card" style={{ marginBottom: '1.25rem' }}>
+        <div className="card-title">Five assurance pillars</div>
+        <div className="metrics">
+          {pillarSummaries.map((pillar) => (
+            <div key={pillar.name} className="metric">
+              <div className="metric-label">{pillar.name}</div>
+              <div className="metric-val" style={{ color: '#818cf8' }}>{pillar.score}/100</div>
+              <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '4px' }}>{pillar.confidence} confidence</div>
+              <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{pillar.status}</div>
+              <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '4px' }}>{pillar.description}</div>
+            </div>
+          ))}
+        </div>
+      </div>
       <NewScanPanel
         systems={systems}
         selectedSystemId={selectedSystemId}

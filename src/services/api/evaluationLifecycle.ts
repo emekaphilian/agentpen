@@ -1,13 +1,13 @@
 import { EvaluationStatus, type EvaluationLifecycleState, type EvaluationLifecycleStep } from '../../types'
 
 const lifecycleSteps: Array<Omit<EvaluationLifecycleStep, 'completed'>> = [
-  { key: EvaluationStatus.Draft, title: 'Draft', description: 'The evaluation has been created but not yet queued.' },
-  { key: EvaluationStatus.Queued, title: 'Queued', description: 'The evaluation has been accepted for execution.' },
-  { key: EvaluationStatus.Initializing, title: 'Initializing', description: 'Preparing the assurance runtime and context.' },
-  { key: EvaluationStatus.Running, title: 'Running', description: 'The evaluation is executing checks and probes.' },
-  { key: EvaluationStatus.CollectingEvidence, title: 'Collecting evidence', description: 'Evidence is being gathered for the review.' },
-  { key: EvaluationStatus.CalculatingScores, title: 'Calculating scores', description: 'Assurance scores are being calculated.' },
-  { key: EvaluationStatus.GeneratingReport, title: 'Generating report', description: 'The final report is being assembled.' },
+  { key: EvaluationStatus.Draft, title: 'Queued', description: 'The evaluation has been created and is waiting to begin.' },
+  { key: EvaluationStatus.Queued, title: 'Discovery', description: 'Preparing the assurance runtime and context for the target AI system.' },
+  { key: EvaluationStatus.Initializing, title: 'Evaluation', description: 'Executing the configured assurance checks and evaluation suite.' },
+  { key: EvaluationStatus.Running, title: 'Adversarial testing', description: 'Exercising the system with targeted challenge scenarios.' },
+  { key: EvaluationStatus.CollectingEvidence, title: 'Evidence collection', description: 'Gathering evidence, findings, and supporting artifacts.' },
+  { key: EvaluationStatus.CalculatingScores, title: 'Assurance scoring', description: 'Scoring the evidence across the five assurance pillars.' },
+  { key: EvaluationStatus.GeneratingReport, title: 'Report generation', description: 'Assembling the assurance report and recommendations.' },
   { key: EvaluationStatus.Completed, title: 'Completed', description: 'The evaluation finished successfully.' }
 ]
 

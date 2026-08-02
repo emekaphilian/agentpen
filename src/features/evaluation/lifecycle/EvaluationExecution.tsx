@@ -7,9 +7,9 @@ interface EvaluationExecutionProps {
 export function EvaluationExecution({ lifecycle }: EvaluationExecutionProps) {
   return (
     <div className="status-message">
-      <p className="detail-label">Execution</p>
-      <h2 className="system-name">{lifecycle.currentStatus}</h2>
-      <p className="system-meta">The evaluation is progressing through the assurance lifecycle and collecting evidence.</p>
+      <p className="detail-label">Lifecycle stage</p>
+      <h2 className="system-name">Evaluation in progress</h2>
+      <p className="system-meta">The evaluation is progressing through discovery, adversarial testing, evidence collection, and assurance scoring.</p>
     </div>
   )
 }

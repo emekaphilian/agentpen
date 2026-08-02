@@ -3,7 +3,7 @@ interface TopbarProps {
   meta?: string
 }
 
-export default function Topbar({ title = 'New Scan', meta = 'Configure and run adversarial probes' }: TopbarProps) {
+export default function Topbar({ title = 'AI Assurance Laboratory', meta = 'Register AI systems, configure evaluations, review evidence, and generate assurance reports' }: TopbarProps) {
   return (
     <div className="topbar">
       <div className="topbar-left">

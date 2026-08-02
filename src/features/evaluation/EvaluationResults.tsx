@@ -77,13 +77,43 @@ export function EvaluationResults({ evaluation }: EvaluationResultsProps) {
       </div>
 
       <div className="full-width">
-        <p className="detail-label">Lifecycle</p>
+        <p className="detail-label">Evaluation lifecycle</p>
         {lifecycle.currentStatus === EvaluationStatus.Completed && <EvaluationCompleted lifecycle={lifecycle} />}
         {lifecycle.currentStatus === EvaluationStatus.Failed && <EvaluationFailed lifecycle={lifecycle} />}
         {lifecycle.currentStatus === EvaluationStatus.Cancelled && <EvaluationCancelled lifecycle={lifecycle} />}
         {(lifecycle.currentStatus === EvaluationStatus.Queued || lifecycle.currentStatus === EvaluationStatus.Initializing) && <EvaluationQueue lifecycle={lifecycle} />}
         {(lifecycle.currentStatus === EvaluationStatus.Running || lifecycle.currentStatus === EvaluationStatus.CollectingEvidence || lifecycle.currentStatus === EvaluationStatus.CalculatingScores || lifecycle.currentStatus === EvaluationStatus.GeneratingReport) && <EvaluationExecution lifecycle={lifecycle} />}
         <EvaluationStatusTimeline lifecycle={lifecycle} />
+      </div>
+
+      <div className="full-width">
+        <p className="detail-label">Evaluation metadata</p>
+        <div className="finding-list">
+          <div className="card" style={{ marginBottom: '0.75rem' }}>
+            <div className="system-name">Evaluation ID</div>
+            <div className="system-meta">{evaluation.id}</div>
+          </div>
+          <div className="card" style={{ marginBottom: '0.75rem' }}>
+            <div className="system-name">AI system</div>
+            <div className="system-meta">{evaluation.aiSystemName}</div>
+          </div>
+          <div className="card" style={{ marginBottom: '0.75rem' }}>
+            <div className="system-name">Model version</div>
+            <div className="system-meta">{evaluation.modelVersion}</div>
+          </div>
+          <div className="card" style={{ marginBottom: '0.75rem' }}>
+            <div className="system-name">Deployment context</div>
+            <div className="system-meta">{evaluation.deploymentContext}</div>
+          </div>
+          <div className="card" style={{ marginBottom: '0.75rem' }}>
+            <div className="system-name">Evaluation date</div>
+            <div className="system-meta">{new Date(evaluation.createdAt).toLocaleString()}</div>
+          </div>
+          <div className="card" style={{ marginBottom: '0.75rem' }}>
+            <div className="system-name">Selected test suite</div>
+            <div className="system-meta">{evaluation.pillars.join(', ')}</div>
+          </div>
+        </div>
       </div>
 
       <div className="full-width">

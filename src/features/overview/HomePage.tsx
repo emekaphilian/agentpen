@@ -6,9 +6,9 @@ export default function HomePage() {
       <section className="hero-card">
         <div>
           <p className="eyebrow">AgentPen</p>
-          <h1>AI agent security and audit insights</h1>
+          <h1>AI assurance laboratory insights</h1>
           <p>
-            Connect to the AgentPen backend and review discovered systems, scan history, and risk signals.
+            Connect to the AgentPen backend and review AI systems, evaluation history, assurance evidence, and deployment recommendations.
           </p>
           <Link to="/systems" className="button button-primary">
             Browse Systems
