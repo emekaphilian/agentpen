@@ -123,7 +123,7 @@ export function EvaluationWizard() {
 
     const loadEvidence = async () => {
       try {
-        const items = await getMockEvidence()
+        const items = await getMockEvidence(selectedEvaluationId ?? undefined)
         setEvidence(items.filter((item) => item.evaluationId === selectedEvaluationId || item.evaluationId === 'eval-001'))
       } catch {
         setEvidence([])

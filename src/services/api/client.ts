@@ -56,6 +56,14 @@ export async function get<T>(url: string, signal?: AbortSignal): Promise<T> {
   return request<T>({ method: 'GET', url }, signal)
 }
 
-export async function post<T, D = unknown>(url: string, data: D, signal?: AbortSignal): Promise<T> {
+export async function post<T, D = unknown>(url: string, data?: D, signal?: AbortSignal): Promise<T> {
   return request<T>({ method: 'POST', url, data }, signal)
+}
+
+export async function put<T, D = unknown>(url: string, data: D, signal?: AbortSignal): Promise<T> {
+  return request<T>({ method: 'PUT', url, data }, signal)
+}
+
+export async function del<T>(url: string, signal?: AbortSignal): Promise<T> {
+  return request<T>({ method: 'DELETE', url }, signal)
 }
