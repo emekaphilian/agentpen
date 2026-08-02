@@ -97,7 +97,19 @@ export default function DiscoveryPage() {
     setAssets((currentAssets) => currentAssets.map((item) => item.id === updatedAsset.id ? updatedAsset : item))
     setActiveAsset(updatedAsset)
     setSelectedAssetId(updatedAsset.id)
-    navigate('/evaluations')
+    navigate('/evaluations', {
+      state: {
+        prefill: {
+          id: updatedAsset.id,
+          name: updatedAsset.name,
+          description: updatedAsset.description,
+          version: updatedAsset.version,
+          provider: updatedAsset.provider,
+          endpoint: updatedAsset.endpoint,
+          assetType: updatedAsset.assetType
+        }
+      }
+    })
   }
 
   const handleRefresh = async () => {

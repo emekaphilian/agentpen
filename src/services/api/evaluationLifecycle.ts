@@ -36,7 +36,8 @@ export function buildLifecycleState(currentStatus: EvaluationStatus, updatedAt: 
     [EvaluationStatus.GeneratingReport]: 92,
     [EvaluationStatus.Completed]: 100,
     [EvaluationStatus.Failed]: 0,
-    [EvaluationStatus.Cancelled]: 0
+    [EvaluationStatus.Cancelled]: 0,
+    [EvaluationStatus.Paused]: 54
   }
 
   return {

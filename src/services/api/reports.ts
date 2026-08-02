@@ -91,9 +91,11 @@ function buildMockEvaluation(): Evaluation {
     aiSystemName: 'AgentPen Copilot',
     aiSystemId: 'system-001',
     modelVersion: 'GPT-4.1',
+    model: 'GPT-4.1',
     deploymentContext: 'Internal enterprise copilot',
     pillars: ['Security', 'Safety', 'Reliability', 'Fairness', 'Domain'],
     status: 'Completed' as any,
+    stage: 'Completed',
     summary: 'Assurance evidence has been aggregated for this report.',
     assuranceScore: {
       overall: 82,
@@ -105,6 +107,33 @@ function buildMockEvaluation(): Evaluation {
     },
     evidence: [],
     recommendations: [],
+    progress: {
+      percentage: 100,
+      currentStage: 'Completed',
+      completedStages: ['Initializing', 'Preparing Environment', 'Executing Tests', 'Collecting Evidence', 'Calculating Scores', 'Building Report', 'Completed'],
+      activeTests: [],
+      logs: ['Report prepared.']
+    },
+    configuration: {
+      aiSystemId: 'system-001',
+      aiSystemName: 'AgentPen Copilot',
+      model: 'GPT-4.1',
+      modelVersion: 'GPT-4.1',
+      profile: 'Standard',
+      pillars: ['Security', 'Safety', 'Reliability', 'Fairness', 'Domain'],
+      testSuites: ['OWASP Top 10 for LLM Applications', 'Prompt Injection'],
+      runtimeOptions: {
+        timeoutMinutes: 20,
+        maxConcurrency: 3,
+        includeReasoningTrace: true,
+        captureEvidence: true,
+        notifyOnCompletion: true
+      }
+    },
+    testSuites: ['OWASP Top 10 for LLM Applications', 'Prompt Injection'],
+    durationMinutes: 18,
+    startedAt: new Date().toISOString(),
+    completedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   }

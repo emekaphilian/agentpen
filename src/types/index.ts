@@ -69,6 +69,45 @@ export interface DiscoverySummary {
 
 export type AssurancePillar = 'Security' | 'Safety' | 'Reliability' | 'Fairness' | 'Domain'
 
+export type EvaluationProfile = 'Standard' | 'Red Team' | 'Compliance' | 'Production'
+export type EvaluationStage = 'Initializing' | 'Preparing Environment' | 'Executing Tests' | 'Collecting Evidence' | 'Calculating Scores' | 'Building Report' | 'Completed' | 'Paused' | 'Failed' | 'Cancelled'
+
+export interface EvaluationRuntimeOptions {
+  timeoutMinutes: number
+  maxConcurrency: number
+  includeReasoningTrace: boolean
+  captureEvidence: boolean
+  notifyOnCompletion: boolean
+}
+
+export interface EvaluationProgress {
+  percentage: number
+  currentStage: EvaluationStage
+  completedStages: EvaluationStage[]
+  activeTests: string[]
+  logs: string[]
+}
+
+export interface EvaluationConfiguration {
+  aiSystemId: string
+  aiSystemName: string
+  model: string
+  modelVersion: string
+  profile: EvaluationProfile
+  pillars: AssurancePillar[]
+  testSuites: string[]
+  runtimeOptions: EvaluationRuntimeOptions
+}
+
+export interface EvaluationSummary {
+  totalEvaluations: number
+  runningEvaluations: number
+  completedEvaluations: number
+  failedEvaluations: number
+  averageAssuranceScore: number
+  averageDurationMinutes: number
+}
+
 export enum EvaluationStatus {
   Draft = 'Draft',
   Queued = 'Queued',
@@ -79,7 +118,8 @@ export enum EvaluationStatus {
   GeneratingReport = 'GeneratingReport',
   Completed = 'Completed',
   Failed = 'Failed',
-  Cancelled = 'Cancelled'
+  Cancelled = 'Cancelled',
+  Paused = 'Paused'
 }
 
 export interface EvaluationLifecycleStep {
@@ -222,14 +262,22 @@ export interface Evaluation {
   aiSystemName: string
   aiSystemId: string
   modelVersion: string
+  model: string
   deploymentContext: string
   pillars: AssurancePillar[]
   status: EvaluationStatus
+  stage: EvaluationStage
   summary: string
   assuranceScore: AssuranceScore
   evidence: EvaluationEvidence[]
   recommendations: Recommendation[]
   lifecycle?: EvaluationLifecycleState
+  progress: EvaluationProgress
+  configuration: EvaluationConfiguration
+  testSuites: string[]
+  durationMinutes: number
+  startedAt: string
+  completedAt: string | null
   createdAt: string
   updatedAt: string
 }
@@ -242,6 +290,10 @@ export interface EvaluationCreateInput {
   modelVersion: string
   deploymentContext: string
   pillars: AssurancePillar[]
+  model?: string
+  profile?: EvaluationProfile
+  testSuites?: string[]
+  runtimeOptions?: EvaluationRuntimeOptions
 }
 
 export interface EvaluationSuite {

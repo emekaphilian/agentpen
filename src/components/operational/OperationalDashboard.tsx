@@ -69,9 +69,11 @@ function buildFallbackEvaluation(input: EvaluationCreateInput): Evaluation {
     aiSystemName: input.aiSystemName,
     aiSystemId: input.aiSystemId,
     modelVersion: input.modelVersion,
+    model: input.model ?? input.modelVersion,
     deploymentContext: input.deploymentContext,
     pillars: input.pillars,
     status: EvaluationStatus.Queued,
+    stage: 'Initializing',
     summary: 'The assurance workflow has been queued for execution.',
     assuranceScore: {
       overall: 0,
@@ -83,6 +85,33 @@ function buildFallbackEvaluation(input: EvaluationCreateInput): Evaluation {
     },
     evidence: [],
     recommendations: [],
+    progress: {
+      percentage: 12,
+      currentStage: 'Initializing',
+      completedStages: [],
+      activeTests: [],
+      logs: ['Queued for evaluation.']
+    },
+    configuration: {
+      aiSystemId: input.aiSystemId,
+      aiSystemName: input.aiSystemName,
+      model: input.model ?? input.modelVersion,
+      modelVersion: input.modelVersion,
+      profile: input.profile ?? 'Standard',
+      pillars: input.pillars,
+      testSuites: input.testSuites ?? ['OWASP Top 10 for LLM Applications', 'Prompt Injection'],
+      runtimeOptions: input.runtimeOptions ?? {
+        timeoutMinutes: 20,
+        maxConcurrency: 3,
+        includeReasoningTrace: true,
+        captureEvidence: true,
+        notifyOnCompletion: true
+      }
+    },
+    testSuites: input.testSuites ?? ['OWASP Top 10 for LLM Applications', 'Prompt Injection'],
+    durationMinutes: 0,
+    startedAt: '',
+    completedAt: null,
     lifecycle: buildLifecycleState(EvaluationStatus.Queued, createdAt, createdAt),
     createdAt,
     updatedAt: createdAt
