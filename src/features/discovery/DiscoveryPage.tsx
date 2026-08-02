@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Drawer } from '../../components/ui/Drawer'
 import { StatusBadge } from '../../components/ui/StatusBadge'
+import { useNotifications } from '../../components/ui/NotificationContext'
 import { Table, TableCell, TableHeader, TableHeaderCell, TableRow } from '../../components/ui/Table'
 import { discoverAssets, getAssetDetails, listDiscoveredAssets, registerAsset } from '../../services/api/discovery'
 import type { DiscoveryAsset, DiscoveryStatus, DiscoverySummary } from '../../types'
@@ -54,6 +55,7 @@ export default function DiscoveryPage() {
   const [activeAsset, setActiveAsset] = useState<DiscoveryAsset | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const navigate = useNavigate()
+  const { showNotification } = useNotifications()
 
   useEffect(() => {
     void loadDiscoveryData()
@@ -93,31 +95,58 @@ export default function DiscoveryPage() {
   }
 
   const handleRegister = async (asset: DiscoveryAsset) => {
-    const updatedAsset = await registerAsset(asset.id)
-    setAssets((currentAssets) => currentAssets.map((item) => item.id === updatedAsset.id ? updatedAsset : item))
-    setActiveAsset(updatedAsset)
-    setSelectedAssetId(updatedAsset.id)
-    navigate('/evaluations', {
-      state: {
-        prefill: {
-          id: updatedAsset.id,
-          name: updatedAsset.name,
-          description: updatedAsset.description,
-          version: updatedAsset.version,
-          provider: updatedAsset.provider,
-          endpoint: updatedAsset.endpoint,
-          assetType: updatedAsset.assetType
+    try {
+      const updatedAsset = await registerAsset(asset.id)
+      setAssets((currentAssets) => currentAssets.map((item) => item.id === updatedAsset.id ? updatedAsset : item))
+      setActiveAsset(updatedAsset)
+      setSelectedAssetId(updatedAsset.id)
+      showNotification({
+        title: 'Asset registered',
+        message: `${updatedAsset.name} is now ready for evaluation.`,
+        type: 'success'
+      })
+      navigate('/evaluations', {
+        state: {
+          prefill: {
+            id: updatedAsset.id,
+            name: updatedAsset.name,
+            description: updatedAsset.description,
+            version: updatedAsset.version,
+            provider: updatedAsset.provider,
+            endpoint: updatedAsset.endpoint,
+            assetType: updatedAsset.assetType
+          }
         }
-      }
-    })
+      })
+    } catch (error) {
+      showNotification({
+        title: 'Registration failed',
+        message: error instanceof Error ? error.message : 'Unable to register the selected asset.',
+        type: 'error'
+      })
+    }
   }
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
-    const payload = await discoverAssets()
-    setAssets(payload.assets)
-    setSummary(payload.summary)
-    setIsRefreshing(false)
+    try {
+      const payload = await discoverAssets()
+      setAssets(payload.assets)
+      setSummary(payload.summary)
+      showNotification({
+        title: 'Discovery refreshed',
+        message: 'The discovery engine has refreshed the asset inventory.',
+        type: 'info'
+      })
+    } catch (error) {
+      showNotification({
+        title: 'Refresh failed',
+        message: error instanceof Error ? error.message : 'Unable to refresh discovery data.',
+        type: 'error'
+      })
+    } finally {
+      setIsRefreshing(false)
+    }
   }
 
   return (

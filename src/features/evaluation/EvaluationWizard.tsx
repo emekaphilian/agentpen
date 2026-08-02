@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Drawer } from '../../components/ui/Drawer'
 import { StatusBadge } from '../../components/ui/StatusBadge'
+import { useNotifications } from '../../components/ui/NotificationContext'
 import { Table, TableCell, TableHeader, TableHeaderCell, TableRow } from '../../components/ui/Table'
 import { createEvaluation, getEmptyEvaluationState, getEvaluationById, getEvaluationProgress, getEvaluations, pauseEvaluation, resumeEvaluation, cancelEvaluation, retryEvaluation, startEvaluation } from '../../services/api/evaluations'
+import { buildLifecycleState } from '../../services/api/evaluationLifecycle'
 import { getMockEvidence } from '../../services/api/evidence'
+import { EvaluationStatus } from '../../types'
 import type { AssurancePillar, Evaluation, EvaluationCreateInput, EvaluationProfile, EvaluationRuntimeOptions, Evidence } from '../../types'
 import { AssuranceDashboard } from '../assurance/AssuranceDashboard'
 import { EvidenceViewer } from '../evidence/EvidenceViewer'
@@ -89,9 +92,11 @@ export function EvaluationWizard() {
   const [progress, setProgress] = useState(0)
   const [submissionError, setSubmissionError] = useState<string | null>(null)
   const [isLaunching, setIsLaunching] = useState(false)
+  const [isPolling, setIsPolling] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [drawerMode, setDrawerMode] = useState<'details' | 'assurance' | 'evidence'>('details')
   const [evidence, setEvidence] = useState<Evidence[]>([])
+  const { showNotification } = useNotifications()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -132,6 +137,59 @@ export function EvaluationWizard() {
 
     void loadEvidence()
   }, [selectedEvaluationId])
+
+  useEffect(() => {
+    const pollStatuses = new Set<EvaluationStatus>([
+      EvaluationStatus.Queued,
+      EvaluationStatus.Initializing,
+      EvaluationStatus.Running,
+      EvaluationStatus.CollectingEvidence,
+      EvaluationStatus.CalculatingScores,
+      EvaluationStatus.GeneratingReport,
+      EvaluationStatus.Paused
+    ])
+
+    if (!activeEvaluation || !pollStatuses.has(activeEvaluation.status)) {
+      setIsPolling(false)
+      return undefined
+    }
+
+    setIsPolling(true)
+    let lastStatus = activeEvaluation.status
+    const intervalId = window.setInterval(async () => {
+      try {
+        const updated = await getEvaluationProgress(activeEvaluation.id)
+        if (!updated) {
+          return
+        }
+
+        setActiveEvaluation(updated)
+        updateEvaluationInState(updated)
+        setProgress(updated.progress.percentage)
+
+        if ([EvaluationStatus.Completed, EvaluationStatus.Failed, EvaluationStatus.Cancelled].includes(updated.status)) {
+          setStep('results')
+        }
+
+        if (updated.status !== lastStatus && [EvaluationStatus.Completed, EvaluationStatus.Failed, EvaluationStatus.Cancelled].includes(updated.status)) {
+          showNotification({
+            title: `Evaluation ${updated.status.toLowerCase()}`,
+            message: `${updated.name} has ${updated.status.toLowerCase()}.`,
+            type: updated.status === EvaluationStatus.Completed ? 'success' : 'error'
+          })
+        }
+
+        lastStatus = updated.status
+      } catch {
+        // Ignore transient polling failures; UI remains live and will update on the next tick.
+      }
+    }, 2800)
+
+    return () => {
+      window.clearInterval(intervalId)
+      setIsPolling(false)
+    }
+  }, [activeEvaluation?.id, activeEvaluation?.status, showNotification])
 
   const selectedEvaluation = useMemo(() => {
     if (selectedEvaluationId) {
@@ -227,27 +285,22 @@ export function EvaluationWizard() {
       setActiveEvaluation(started)
       updateEvaluationInState(started)
       setProgress(started.progress.percentage)
+      setStep('progress')
 
-      for (let index = 0; index < 4; index += 1) {
-        await wait(800)
-        const updated = await getEvaluationProgress(started.id, controller.signal)
-        if (updated) {
-          setActiveEvaluation(updated)
-          updateEvaluationInState(updated)
-          setProgress(updated.progress.percentage)
-        }
-      }
-
-      const completed = await getEvaluationProgress(started.id, controller.signal)
-      if (completed) {
-        setActiveEvaluation(completed)
-        updateEvaluationInState(completed)
-        setProgress(completed.progress.percentage)
-      }
-      setStep('results')
+      showNotification({
+        title: 'Evaluation started',
+        message: `${started.name} has been queued and is running in the assurance engine.`,
+        type: 'success'
+      })
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to create evaluation.'
       setProgress(0)
-      setSubmissionError(error instanceof Error ? error.message : 'Unable to create evaluation.')
+      setSubmissionError(message)
+      showNotification({
+        title: 'Evaluation launch failed',
+        message,
+        type: 'error'
+      })
       setStep('summary')
     } finally {
       setIsLaunching(false)
@@ -314,9 +367,20 @@ export function EvaluationWizard() {
         updateEvaluationInState(updated)
         setActiveEvaluation(updated)
         setSelectedEvaluationId(updated.id)
+        showNotification({
+          title: `Evaluation ${updated.status.toLowerCase()}`,
+          message: `${updated.name} is now ${updated.status}.`,
+          type: updated.status === 'Running' ? 'success' : updated.status === 'Failed' ? 'error' : 'warning'
+        })
       }
     } catch (error) {
-      setSubmissionError(error instanceof Error ? error.message : 'Unable to update evaluation.')
+      const message = error instanceof Error ? error.message : 'Unable to update evaluation.'
+      setSubmissionError(message)
+      showNotification({
+        title: 'Evaluation update failed',
+        message,
+        type: 'error'
+      })
     }
   }
 
@@ -445,7 +509,13 @@ export function EvaluationWizard() {
           </>
         )}
 
-        {step === 'progress' && <EvaluationProgress progress={progress} status={activeEvaluation?.progress.currentStage ?? 'Preparing evaluation run'} />}
+        {step === 'progress' && (
+          <EvaluationProgress
+            progress={progress}
+            status={activeEvaluation?.progress.currentStage ?? 'Preparing evaluation run'}
+            lifecycle={activeEvaluation?.lifecycle ?? buildLifecycleState(activeEvaluation?.status ?? EvaluationStatus.Queued, activeEvaluation?.updatedAt ?? new Date().toISOString(), activeEvaluation?.createdAt ?? null)}
+          />
+        )}
 
         {step === 'results' && activeEvaluation && (
           <>
