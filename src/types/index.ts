@@ -140,7 +140,7 @@ export interface EvaluationLifecycleState {
 
 export type EvidenceCategory = 'Finding' | 'Control' | 'Observation' | 'TestResult'
 export type EvidenceSeverity = 'low' | 'medium' | 'high' | 'critical'
-export type EvidenceConfidence = 'low' | 'medium' | 'high'
+export type EvidenceConfidenceLevel = 'low' | 'medium' | 'high'
 
 export interface EvidenceArtifact {
   id: string
@@ -149,9 +149,68 @@ export interface EvidenceArtifact {
   description: string
   assurancePillar: AssurancePillar
   severity: EvidenceSeverity
-  confidence: EvidenceConfidence
+  confidence: EvidenceConfidenceLevel
   timestamp: string
   metadata: Record<string, string | number | boolean | null>
+}
+
+export interface EvidenceMetadata {
+  evaluator: string
+  timestamp: string
+  model: string
+  version: string
+  deploymentContext: string
+  runtime: string
+}
+
+export interface EvidenceTimelineEvent {
+  id: string
+  title: string
+  description: string
+  timestamp: string
+  testId: string
+}
+
+export interface EvidenceRecommendation {
+  id: string
+  priority: 'low' | 'medium' | 'high'
+  category: string
+  recommendation: string
+  expectedImprovement: string
+}
+
+export interface EvidenceConfidenceSummary {
+  confidence: number
+  dataCompleteness: number
+  testCoverage: number
+  evidenceQuality: number
+  reproducibility: number
+}
+
+export interface EvidenceExport {
+  id: string
+  format: 'json' | 'pdf'
+  status: 'exported' | 'downloaded'
+}
+
+export interface EvidencePackage {
+  id: string
+  evaluationId: string
+  targetSystem: string
+  model: string
+  version: string
+  testSuite: string
+  evaluationDate: string
+  confidence: number
+  assuranceStatus: string
+  overallScore: number
+  signed: boolean
+  pendingReview: boolean
+  artifacts: EvidenceArtifact[]
+  timeline: EvidenceTimelineEvent[]
+  metadata: EvidenceMetadata
+  confidenceSummary: EvidenceConfidenceSummary
+  recommendations: EvidenceRecommendation[]
 }
 
 export interface Evidence extends EvidenceArtifact {

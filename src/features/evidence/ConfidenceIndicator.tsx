@@ -1,16 +1,16 @@
-import type { EvidenceConfidence } from '../../types'
+import type { EvidenceConfidenceLevel } from '../../types'
 
 interface ConfidenceIndicatorProps {
-  confidence: EvidenceConfidence
+  confidence: EvidenceConfidenceLevel
 }
 
-const confidenceStyles: Record<EvidenceConfidence, string> = {
+const confidenceStyles: Record<EvidenceConfidenceLevel, string> = {
   low: 'rgba(248, 113, 113, 0.16)',
   medium: 'rgba(250, 204, 21, 0.16)',
   high: 'rgba(52, 211, 153, 0.16)'
 }
 
-const confidenceTextStyles: Record<EvidenceConfidence, string> = {
+const confidenceTextStyles: Record<EvidenceConfidenceLevel, string> = {
   low: '#fecaca',
   medium: '#fde68a',
   high: '#bbf7d0'

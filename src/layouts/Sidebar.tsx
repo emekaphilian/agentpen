@@ -8,7 +8,7 @@ const navItems = [
 ]
 
 const reportItems = [
-  { label: 'Evidence', to: '/evaluations', icon: '📄' },
+  { label: 'Evidence', to: '/evidence', icon: '📄' },
   { label: 'Assurance', to: '/reports', icon: '🕐' }
 ]
 
