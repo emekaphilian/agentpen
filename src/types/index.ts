@@ -315,6 +315,40 @@ export interface FrameworkMapping {
   mapping: string
 }
 
+export type ReportCategory = 'Executive' | 'Compliance' | 'Operational' | 'Template'
+export type ReportStatus = 'Draft' | 'Ready for Review' | 'Published' | 'Archived' | 'Scheduled'
+
+export interface ReportEvidencePackage {
+  id: string
+  name: string
+  confidence: number
+  artifactCount: number
+  reviewedBy: string
+}
+
+export interface ReportVersion {
+  version: string
+  publishedAt: string
+  status: ReportStatus
+  summary: string
+}
+
+export interface DigitalSignature {
+  signer: string
+  role: string
+  signedAt: string
+  status: 'Pending' | 'Signed' | 'Revoked'
+  certificateId: string
+}
+
+export interface ReportTemplate {
+  id: string
+  name: string
+  category: ReportCategory
+  description: string
+  default: boolean
+}
+
 export interface AssuranceReport {
   id: string
   evaluationId: string
@@ -327,6 +361,14 @@ export interface AssuranceReport {
   findings: Finding[]
   recommendations: Recommendation[]
   frameworkMappings: FrameworkMapping[]
+  category: ReportCategory
+  status: ReportStatus
+  owner: string
+  reportType: string
+  evidencePackages: ReportEvidencePackage[]
+  signature: DigitalSignature
+  versionHistory: ReportVersion[]
+  templates: ReportTemplate[]
 }
 
 export interface EvaluationEvidence {

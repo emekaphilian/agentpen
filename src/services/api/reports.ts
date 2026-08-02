@@ -1,9 +1,8 @@
 import { get, post } from './client'
-import type { AssuranceReport, AssuranceResult, Evaluation, Recommendation, RiskLevel } from '../../types'
-import { getMockEvidence } from './evidence'
+import type { AssuranceReport, AssuranceResult, Evaluation, Recommendation } from '../../types'
 import { getMockAssuranceResult } from './assurance'
 
-function createMockReport(evaluation: Evaluation, assurance: AssuranceResult): AssuranceReport {
+function createMockReport(evaluation: Evaluation, assurance: AssuranceResult, options: Partial<AssuranceReport> = {}): AssuranceReport {
   const findings = [
     {
       id: 'finding-001',
@@ -26,6 +25,8 @@ function createMockReport(evaluation: Evaluation, assurance: AssuranceResult): A
     id: `report-rec-${index + 1}`
   }))
 
+  const generatedAt = new Date().toISOString()
+
   return {
     id: `report-${evaluation.id}`,
     evaluationId: evaluation.id,
@@ -34,7 +35,7 @@ function createMockReport(evaluation: Evaluation, assurance: AssuranceResult): A
       aiSystem: evaluation.aiSystemName,
       modelVersion: evaluation.modelVersion,
       deploymentContext: evaluation.deploymentContext,
-      generatedAt: new Date().toISOString()
+      generatedAt
     },
     executiveSummary: {
       headline: 'Assurance posture is broadly stable with targeted risk reduction required.',
@@ -79,19 +80,43 @@ function createMockReport(evaluation: Evaluation, assurance: AssuranceResult): A
         framework: 'ISO/IEC 42001',
         mapping: 'Provides organizational management system alignment for responsible AI operations.'
       }
-    ]
+    ],
+    category: 'Executive',
+    status: 'Published',
+    owner: 'Governance Office',
+    reportType: 'Executive assurance summary',
+    evidencePackages: [
+      { id: 'pkg-001', name: 'Compliance Copilot Evidence Bundle', confidence: 86, artifactCount: 12, reviewedBy: 'A. Patel' },
+      { id: 'pkg-002', name: 'Prompt Injection Replay Pack', confidence: 74, artifactCount: 7, reviewedBy: 'S. Rivera' }
+    ],
+    signature: {
+      signer: 'Dr. K. Nguyen',
+      role: 'Chief AI Assurance Officer',
+      signedAt: generatedAt,
+      status: 'Signed',
+      certificateId: 'SIG-2026-08-01-001'
+    },
+    versionHistory: [
+      { version: 'v1.0', publishedAt: generatedAt, status: 'Published', summary: 'Initial executive report published after evidence sign-off.' },
+      { version: 'v0.9', publishedAt: new Date(Date.now() - 86400000).toISOString(), status: 'Ready for Review', summary: 'Stakeholder review draft released.' }
+    ],
+    templates: [
+      { id: 'template-exec', name: 'Executive Summary', category: 'Executive', description: 'Leadership-ready assurance narrative.', default: true },
+      { id: 'template-compliance', name: 'Compliance Deck', category: 'Compliance', description: 'Framework mapping and evidence sign-off.', default: false }
+    ],
+    ...options
   }
 }
 
-function buildMockEvaluation(): Evaluation {
+function buildMockEvaluation(id: string, name: string, aiSystemName: string, modelVersion: string): Evaluation {
   return {
-    id: 'eval-001',
-    name: 'Quarterly assurance review',
+    id,
+    name,
     description: 'System evaluation for current deployment posture.',
-    aiSystemName: 'AgentPen Copilot',
+    aiSystemName,
     aiSystemId: 'system-001',
-    modelVersion: 'GPT-4.1',
-    model: 'GPT-4.1',
+    modelVersion,
+    model: modelVersion,
     deploymentContext: 'Internal enterprise copilot',
     pillars: ['Security', 'Safety', 'Reliability', 'Fairness', 'Domain'],
     status: 'Completed' as any,
@@ -116,9 +141,9 @@ function buildMockEvaluation(): Evaluation {
     },
     configuration: {
       aiSystemId: 'system-001',
-      aiSystemName: 'AgentPen Copilot',
-      model: 'GPT-4.1',
-      modelVersion: 'GPT-4.1',
+      aiSystemName,
+      model: modelVersion,
+      modelVersion,
       profile: 'Standard',
       pillars: ['Security', 'Safety', 'Reliability', 'Fairness', 'Domain'],
       testSuites: ['OWASP Top 10 for LLM Applications', 'Prompt Injection'],
@@ -145,8 +170,55 @@ export async function getReports(signal?: AbortSignal): Promise<AssuranceReport[
     return response
   } catch {
     const assurance = await getMockAssuranceResult()
-    const evaluation = buildMockEvaluation()
-    return [createMockReport(evaluation, assurance)]
+    const evaluations = [
+      buildMockEvaluation('eval-001', 'Quarterly assurance review', 'AgentPen Copilot', 'GPT-4.1'),
+      buildMockEvaluation('eval-002', 'Compliance readiness review', 'AgentPen Copilot', 'GPT-4.1-mini'),
+      buildMockEvaluation('eval-003', 'Operational release sign-off', 'AgentPen Copilot', 'GPT-4.1')
+    ]
+
+    return [
+      createMockReport(evaluations[0], assurance, {
+        id: 'report-001',
+        category: 'Executive',
+        status: 'Published',
+        owner: 'Governance Office',
+        reportType: 'Executive assurance summary',
+        evidencePackages: [
+          { id: 'pkg-001', name: 'Compliance Copilot Evidence Bundle', confidence: 86, artifactCount: 12, reviewedBy: 'A. Patel' },
+          { id: 'pkg-002', name: 'Prompt Injection Replay Pack', confidence: 74, artifactCount: 7, reviewedBy: 'S. Rivera' }
+        ]
+      }),
+      createMockReport(evaluations[1], assurance, {
+        id: 'report-002',
+        category: 'Compliance',
+        status: 'Ready for Review',
+        owner: 'Risk & Compliance',
+        reportType: 'Framework alignment and controls',
+        evidencePackages: [
+          { id: 'pkg-003', name: 'NIST AI RMF Evidence Pack', confidence: 79, artifactCount: 9, reviewedBy: 'M. Chen' }
+        ],
+        signature: {
+          signer: 'M. Chen',
+          role: 'Compliance Lead',
+          signedAt: new Date().toISOString(),
+          status: 'Pending',
+          certificateId: 'SIG-2026-08-01-002'
+        }
+      }),
+      createMockReport(evaluations[2], assurance, {
+        id: 'report-003',
+        category: 'Operational',
+        status: 'Scheduled',
+        owner: 'Operations',
+        reportType: 'Release readiness monitor',
+        evidencePackages: [
+          { id: 'pkg-004', name: 'Operational Monitoring Bundle', confidence: 81, artifactCount: 6, reviewedBy: 'L. Brooks' }
+        ],
+        versionHistory: [
+          { version: 'v0.8', publishedAt: new Date(Date.now() - 172800000).toISOString(), status: 'Scheduled', summary: 'Operational release plan drafted.' }
+        ]
+      })
+    ]
   }
 }
 
@@ -155,9 +227,8 @@ export async function getReportById(id: string, signal?: AbortSignal): Promise<A
     const response = await get<AssuranceReport>(`/reports/${encodeURIComponent(id)}`, signal)
     return response
   } catch {
-    const assurance = await getMockAssuranceResult()
-    const evaluation = buildMockEvaluation()
-    return createMockReport(evaluation, assurance)
+    const reports = await getReports(signal)
+    return reports.find((report) => report.id === id) ?? reports[0]
   }
 }
 
@@ -167,7 +238,21 @@ export async function createReport(signal?: AbortSignal): Promise<AssuranceRepor
     return response
   } catch {
     const assurance = await getMockAssuranceResult()
-    const evaluation = buildMockEvaluation()
-    return createMockReport(evaluation, assurance)
+    const evaluation = buildMockEvaluation('eval-004', 'New draft report', 'AgentPen Copilot', 'GPT-4.1')
+    return createMockReport(evaluation, assurance, {
+      id: 'report-draft',
+      category: 'Template',
+      status: 'Draft',
+      owner: 'Analyst',
+      reportType: 'Draft report template',
+      evidencePackages: [],
+      signature: {
+        signer: 'Pending',
+        role: 'Analyst',
+        signedAt: new Date().toISOString(),
+        status: 'Pending',
+        certificateId: 'SIG-PENDING'
+      }
+    })
   }
 }
