@@ -48,6 +48,46 @@ const defaultDraft: EvaluationCreateInput = {
 
 const pillarOptions: AssurancePillar[] = ['Security', 'Safety', 'Reliability', 'Fairness', 'Domain']
 
+const liveStageOrder = [
+  EvaluationStatus.Queued,
+  EvaluationStatus.Initializing,
+  EvaluationStatus.Discovery,
+  EvaluationStatus.PreparingEnvironment,
+  EvaluationStatus.RunningSecurityAssurance,
+  EvaluationStatus.RunningSafetyAssurance,
+  EvaluationStatus.RunningReliabilityAssurance,
+  EvaluationStatus.RunningFairnessAssurance,
+  EvaluationStatus.RunningDomainAssurance,
+  EvaluationStatus.EvidenceCollection,
+  EvaluationStatus.EvidenceValidation,
+  EvaluationStatus.AssuranceCalculation,
+  EvaluationStatus.ReportGeneration,
+  EvaluationStatus.PublishingResults,
+  EvaluationStatus.Completed
+] as const
+
+const liveStageDescriptions: Record<string, { title: string; description: string; icon: string }> = {
+  [EvaluationStatus.Queued]: { title: 'Queued', description: 'Evaluation accepted and waiting for execution.', icon: '⏳' },
+  [EvaluationStatus.Initializing]: { title: 'Initializing', description: 'Provisioning runtime, credentials, and execution context.', icon: '⚙️' },
+  [EvaluationStatus.Discovery]: { title: 'Discovery', description: 'Mapping the AI system, frameworks, and control scope.', icon: '🔎' },
+  [EvaluationStatus.PreparingEnvironment]: { title: 'Preparing Environment', description: 'Preparing the sandbox and policy runtime.', icon: '🧰' },
+  [EvaluationStatus.RunningSecurityAssurance]: { title: 'Security Assurance', description: 'Running security probes and control validation.', icon: '🛡️' },
+  [EvaluationStatus.RunningSafetyAssurance]: { title: 'Safety Assurance', description: 'Executing safety and refusal quality checks.', icon: '🧯' },
+  [EvaluationStatus.RunningReliabilityAssurance]: { title: 'Reliability Assurance', description: 'Testing resilience and consistency under stress.', icon: '📈' },
+  [EvaluationStatus.RunningFairnessAssurance]: { title: 'Fairness Assurance', description: 'Assessing fairness, representativeness, and bias risk.', icon: '⚖️' },
+  [EvaluationStatus.RunningDomainAssurance]: { title: 'Domain Assurance', description: 'Reviewing domain-specific controls and requirements.', icon: '🏛️' },
+  [EvaluationStatus.EvidenceCollection]: { title: 'Evidence Collection', description: 'Capturing audit artifacts and test evidence.', icon: '🧾' },
+  [EvaluationStatus.EvidenceValidation]: { title: 'Evidence Validation', description: 'Validating artifact quality and evidence integrity.', icon: '✅' },
+  [EvaluationStatus.AssuranceCalculation]: { title: 'Assurance Calculation', description: 'Computing assurance scores and residual risk.', icon: '📊' },
+  [EvaluationStatus.ReportGeneration]: { title: 'Report Generation', description: 'Compiling the assurance narrative and recommendations.', icon: '📝' },
+  [EvaluationStatus.PublishingResults]: { title: 'Publishing Results', description: 'Publishing the signed report and evidence package.', icon: '🚀' },
+  [EvaluationStatus.Completed]: { title: 'Completed', description: 'Evaluation completed successfully.', icon: '🎯' },
+  [EvaluationStatus.Failed]: { title: 'Failed', description: 'Evaluation failed and requires remediation.', icon: '⛔' },
+  [EvaluationStatus.Cancelled]: { title: 'Cancelled', description: 'Evaluation cancelled by operator action.', icon: '🚫' },
+  [EvaluationStatus.Paused]: { title: 'Paused', description: 'Evaluation is paused and ready to resume.', icon: '⏸️' },
+  [EvaluationStatus.Published]: { title: 'Published', description: 'Results have been published to stakeholders.', icon: '📣' }
+}
+
 function buildDraftFromPrefill(prefill?: PrefillState): EvaluationCreateInput {
   if (!prefill) {
     return defaultDraft
@@ -67,15 +107,26 @@ function buildDraftFromPrefill(prefill?: PrefillState): EvaluationCreateInput {
 
 function getStatusTone(status: Evaluation['status']) {
   switch (status) {
-    case 'Completed':
+    case EvaluationStatus.Completed:
+    case EvaluationStatus.Published:
       return 'healthy'
-    case 'Running':
+    case EvaluationStatus.Running:
+    case EvaluationStatus.RunningSecurityAssurance:
+    case EvaluationStatus.RunningSafetyAssurance:
+    case EvaluationStatus.RunningReliabilityAssurance:
+    case EvaluationStatus.RunningFairnessAssurance:
+    case EvaluationStatus.RunningDomainAssurance:
       return 'at-risk'
-    case 'Queued':
-    case 'Paused':
+    case EvaluationStatus.Queued:
+    case EvaluationStatus.Initializing:
+    case EvaluationStatus.Discovery:
+    case EvaluationStatus.PreparingEnvironment:
+    case EvaluationStatus.Paused:
+    case EvaluationStatus.Draft:
       return 'warning'
-    case 'Failed':
-      return 'warning'
+    case EvaluationStatus.Failed:
+    case EvaluationStatus.Cancelled:
+      return 'offline'
     default:
       return 'offline'
   }
@@ -142,10 +193,19 @@ export function EvaluationWizard() {
     const pollStatuses = new Set<EvaluationStatus>([
       EvaluationStatus.Queued,
       EvaluationStatus.Initializing,
+      EvaluationStatus.Discovery,
+      EvaluationStatus.PreparingEnvironment,
       EvaluationStatus.Running,
-      EvaluationStatus.CollectingEvidence,
-      EvaluationStatus.CalculatingScores,
-      EvaluationStatus.GeneratingReport,
+      EvaluationStatus.RunningSecurityAssurance,
+      EvaluationStatus.RunningSafetyAssurance,
+      EvaluationStatus.RunningReliabilityAssurance,
+      EvaluationStatus.RunningFairnessAssurance,
+      EvaluationStatus.RunningDomainAssurance,
+      EvaluationStatus.EvidenceCollection,
+      EvaluationStatus.EvidenceValidation,
+      EvaluationStatus.AssuranceCalculation,
+      EvaluationStatus.ReportGeneration,
+      EvaluationStatus.PublishingResults,
       EvaluationStatus.Paused
     ])
 
@@ -200,9 +260,26 @@ export function EvaluationWizard() {
 
   const summary = useMemo(() => {
     const total = evaluationsState.data.length
-    const running = evaluationsState.data.filter((item) => item.status === 'Running').length
-    const completed = evaluationsState.data.filter((item) => item.status === 'Completed').length
-    const failed = evaluationsState.data.filter((item) => item.status === 'Failed').length
+    const running = evaluationsState.data.filter((item) => [
+      EvaluationStatus.Queued,
+      EvaluationStatus.Initializing,
+      EvaluationStatus.Discovery,
+      EvaluationStatus.PreparingEnvironment,
+      EvaluationStatus.Running,
+      EvaluationStatus.RunningSecurityAssurance,
+      EvaluationStatus.RunningSafetyAssurance,
+      EvaluationStatus.RunningReliabilityAssurance,
+      EvaluationStatus.RunningFairnessAssurance,
+      EvaluationStatus.RunningDomainAssurance,
+      EvaluationStatus.EvidenceCollection,
+      EvaluationStatus.EvidenceValidation,
+      EvaluationStatus.AssuranceCalculation,
+      EvaluationStatus.ReportGeneration,
+      EvaluationStatus.PublishingResults,
+      EvaluationStatus.Paused
+    ].includes(item.status)).length
+    const completed = evaluationsState.data.filter((item) => item.status === EvaluationStatus.Completed || item.status === EvaluationStatus.Published).length
+    const failed = evaluationsState.data.filter((item) => item.status === EvaluationStatus.Failed).length
     const averageScore = total > 0 ? Math.round(evaluationsState.data.reduce((sum, item) => sum + item.assuranceScore.overall, 0) / total) : 0
     const averageDuration = total > 0 ? Math.round(evaluationsState.data.reduce((sum, item) => sum + item.durationMinutes, 0) / total) : 0
 
@@ -214,6 +291,26 @@ export function EvaluationWizard() {
       averageAssuranceScore: averageScore,
       averageDurationMinutes: averageDuration
     }
+  }, [evaluationsState.data])
+
+  const activityFeed = useMemo(() => {
+    const events = evaluationsState.data.flatMap((item) => {
+      const base = [
+        { time: item.createdAt, title: 'Evaluation created', detail: `${item.name} was queued for execution.` },
+        { time: item.updatedAt, title: 'Status update', detail: `${item.status} — ${item.progress.currentStage}.` }
+      ]
+
+      if (item.progress.logs.length > 0) {
+        return [
+          ...base,
+          ...item.progress.logs.slice(-5).map((log, index) => ({ time: item.updatedAt, title: `${index === item.progress.logs.length - 1 ? 'Latest log' : 'Activity'} `, detail: log }))
+        ]
+      }
+
+      return base
+    })
+
+    return events.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8)
   }, [evaluationsState.data])
 
   const updateEvaluationInState = (updated: Evaluation) => {
@@ -409,6 +506,40 @@ export function EvaluationWizard() {
               <div className="mt-2 text-2xl font-semibold text-white">{item.value}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="card-title">Live evaluation activity</div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-[1.25rem] border border-[rgba(148,163,184,0.16)] bg-slate-950/80 p-4">
+            <div className="text-sm uppercase tracking-[0.22em] text-slate-400">Current operational status</div>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <div>
+                <div className="text-lg font-semibold text-white">{selectedEvaluation?.status ?? 'Queued'}</div>
+                <div className="text-sm text-slate-300">{selectedEvaluation?.progress.currentStage ?? 'Queued'}</div>
+              </div>
+              <StatusBadge status={getStatusTone(selectedEvaluation?.status ?? EvaluationStatus.Queued)}>{selectedEvaluation?.status ?? EvaluationStatus.Queued}</StatusBadge>
+            </div>
+            <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-full rounded-full bg-gradient-to-r from-primary to-emerald-400" style={{ width: `${selectedEvaluation?.progress.percentage ?? 0}%` }} />
+            </div>
+            <div className="mt-2 text-sm text-slate-300">{selectedEvaluation?.progress.percentage ?? 0}% complete</div>
+          </div>
+
+          <div className="rounded-[1.25rem] border border-[rgba(148,163,184,0.16)] bg-slate-950/80 p-4">
+            <div className="text-sm uppercase tracking-[0.22em] text-slate-400">Activity feed</div>
+            <div className="mt-3 space-y-2">
+              {activityFeed.length === 0 && <div className="text-sm text-slate-300">No live events yet.</div>}
+              {activityFeed.map((event, index) => (
+                <div key={`${event.title}-${index}`} className="rounded-xl border border-slate-800 bg-slate-900/80 p-2">
+                  <div className="text-sm font-medium text-white">{event.title}</div>
+                  <div className="text-xs text-slate-400">{new Date(event.time).toLocaleString()}</div>
+                  <div className="text-xs text-slate-300">{event.detail}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

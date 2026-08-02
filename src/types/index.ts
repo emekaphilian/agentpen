@@ -70,7 +70,25 @@ export interface DiscoverySummary {
 export type AssurancePillar = 'Security' | 'Safety' | 'Reliability' | 'Fairness' | 'Domain'
 
 export type EvaluationProfile = 'Standard' | 'Red Team' | 'Compliance' | 'Production'
-export type EvaluationStage = 'Initializing' | 'Preparing Environment' | 'Executing Tests' | 'Collecting Evidence' | 'Calculating Scores' | 'Building Report' | 'Completed' | 'Paused' | 'Failed' | 'Cancelled'
+export type EvaluationStage =
+  | 'Queued'
+  | 'Initializing'
+  | 'Discovery'
+  | 'Preparing Environment'
+  | 'Running Security Assurance'
+  | 'Running Safety Assurance'
+  | 'Running Reliability Assurance'
+  | 'Running Fairness Assurance'
+  | 'Running Domain Assurance'
+  | 'Evidence Collection'
+  | 'Evidence Validation'
+  | 'Assurance Calculation'
+  | 'Report Generation'
+  | 'Publishing Results'
+  | 'Completed'
+  | 'Paused'
+  | 'Failed'
+  | 'Cancelled'
 
 export interface EvaluationRuntimeOptions {
   timeoutMinutes: number
@@ -86,6 +104,10 @@ export interface EvaluationProgress {
   completedStages: EvaluationStage[]
   activeTests: string[]
   logs: string[]
+  currentOperation?: string
+  stageDescription?: string
+  elapsedSeconds?: number
+  estimatedRemainingSeconds?: number
 }
 
 export interface EvaluationConfiguration {
@@ -112,14 +134,27 @@ export enum EvaluationStatus {
   Draft = 'Draft',
   Queued = 'Queued',
   Initializing = 'Initializing',
+  Discovery = 'Discovery',
+  PreparingEnvironment = 'PreparingEnvironment',
   Running = 'Running',
-  CollectingEvidence = 'CollectingEvidence',
-  CalculatingScores = 'CalculatingScores',
-  GeneratingReport = 'GeneratingReport',
+  RunningSecurityAssurance = 'RunningSecurityAssurance',
+  RunningSafetyAssurance = 'RunningSafetyAssurance',
+  RunningReliabilityAssurance = 'RunningReliabilityAssurance',
+  RunningFairnessAssurance = 'RunningFairnessAssurance',
+  RunningDomainAssurance = 'RunningDomainAssurance',
+  EvidenceCollection = 'EvidenceCollection',
+  CollectingEvidence = 'EvidenceCollection',
+  EvidenceValidation = 'EvidenceValidation',
+  AssuranceCalculation = 'AssuranceCalculation',
+  CalculatingScores = 'AssuranceCalculation',
+  ReportGeneration = 'ReportGeneration',
+  GeneratingReport = 'ReportGeneration',
+  PublishingResults = 'PublishingResults',
   Completed = 'Completed',
   Failed = 'Failed',
   Cancelled = 'Cancelled',
-  Paused = 'Paused'
+  Paused = 'Paused',
+  Published = 'Published'
 }
 
 export interface EvaluationLifecycleStep {

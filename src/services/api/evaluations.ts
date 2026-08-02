@@ -46,7 +46,7 @@ let mockEvaluations: Evaluation[] = [
     progress: {
       percentage: 100,
       currentStage: 'Completed',
-      completedStages: ['Initializing', 'Preparing Environment', 'Executing Tests', 'Collecting Evidence', 'Calculating Scores', 'Building Report', 'Completed'],
+      completedStages: ['Initializing', 'Preparing Environment', 'Running Security Assurance', 'Evidence Collection', 'Assurance Calculation', 'Report Generation', 'Completed'],
       activeTests: ['Prompt Injection', 'Hallucination', 'Tool Abuse'],
       logs: ['Completed evaluation successfully.', 'Evidence bundle generated.']
     },
@@ -79,14 +79,14 @@ let mockEvaluations: Evaluation[] = [
     deploymentContext: 'Hybrid',
     pillars: ['Security', 'Reliability', 'Fairness'],
     status: EvaluationStatus.Running,
-    stage: 'Executing Tests',
+    stage: 'Running Security Assurance',
     summary: 'The evaluation is actively exercising prompts and monitoring tool-use boundaries.',
     assuranceScore: { overall: 78, security: 80, safety: 77, reliability: 76, fairness: 74, domain: 80 },
     evidence: [],
     recommendations: [],
     progress: {
       percentage: 54,
-      currentStage: 'Executing Tests',
+      currentStage: 'Preparing Environment',
       completedStages: ['Initializing', 'Preparing Environment'],
       activeTests: ['MITRE ATLAS', 'Tool Abuse', 'RAG Security'],
       logs: ['Environment prepared.', 'Executing adversarial test suite.']
@@ -210,7 +210,7 @@ let mockEvaluations: Evaluation[] = [
     progress: {
       percentage: 100,
       currentStage: 'Completed',
-      completedStages: ['Initializing', 'Preparing Environment', 'Executing Tests', 'Collecting Evidence', 'Calculating Scores', 'Building Report', 'Completed'],
+      completedStages: ['Initializing', 'Preparing Environment', 'Running Security Assurance', 'Evidence Collection', 'Assurance Calculation', 'Report Generation', 'Completed'],
       activeTests: ['Hallucination', 'Memory Poisoning'],
       logs: ['Completed.', 'Report delivered.']
     },
@@ -268,7 +268,7 @@ function buildProgress(status: EvaluationStatus, existing?: EvaluationProgress):
     return {
       percentage: 100,
       currentStage: 'Completed',
-      completedStages: ['Initializing', 'Preparing Environment', 'Executing Tests', 'Collecting Evidence', 'Calculating Scores', 'Building Report', 'Completed'],
+      completedStages: ['Initializing', 'Preparing Environment', 'Running Security Assurance', 'Evidence Collection', 'Assurance Calculation', 'Report Generation', 'Completed'],
       activeTests: [],
       logs: existing?.logs ? [...existing.logs, 'Evaluation completed.'] : ['Evaluation completed.']
     }
@@ -447,7 +447,7 @@ export async function resumeEvaluation(id: string, signal?: AbortSignal): Promis
   const resumed = applyLifecycle({
     ...evaluation,
     status: EvaluationStatus.Running,
-    stage: 'Executing Tests',
+    stage: 'Running Security Assurance',
     progress: buildProgress(EvaluationStatus.Running, evaluation.progress),
     updatedAt: new Date().toISOString()
   })
@@ -517,7 +517,7 @@ export async function getEvaluationProgress(id: string, signal?: AbortSignal): P
   }
 
   if (evaluation.status === EvaluationStatus.Running) {
-    const stageSequence: EvaluationStage[] = ['Preparing Environment', 'Executing Tests', 'Collecting Evidence', 'Calculating Scores', 'Building Report', 'Completed']
+    const stageSequence: EvaluationStage[] = ['Preparing Environment', 'Running Security Assurance', 'Evidence Collection', 'Assurance Calculation', 'Report Generation', 'Completed']
     const nextIndex = Math.min(stageSequence.indexOf(evaluation.progress.currentStage) + 1, stageSequence.length - 1)
     const nextStage = stageSequence[nextIndex]
     const nextPercent = Math.min(100, evaluation.progress.percentage + 12)
