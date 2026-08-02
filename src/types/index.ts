@@ -35,6 +35,38 @@ export interface AISystem {
   updatedAt: string
 }
 
+export type AssetType = 'AI Models' | 'AI Agents' | 'REST APIs' | 'MCP Servers' | 'Tools' | 'Plugins' | 'Memory' | 'Vector Databases' | 'RAG Sources'
+export type DiscoveryStatus = 'Discovered' | 'Registered' | 'Ready for Evaluation' | 'Evaluation Running' | 'Evaluation Complete'
+
+export interface DiscoveryAsset {
+  id: string
+  name: string
+  description: string
+  assetType: AssetType
+  provider: string
+  version: string
+  status: DiscoveryStatus
+  lastSeen: string
+  evaluationReady: boolean
+  endpoint: string
+  authenticationType: string
+  connectedTools: string[]
+  memoryEnabled: boolean
+  ragEnabled: boolean
+  evaluationStatus: DiscoveryStatus
+}
+
+export interface DiscoverySummary {
+  aiSystems: number
+  models: number
+  agents: number
+  apis: number
+  mcpServers: number
+  tools: number
+  memoryStores: number
+  ragSources: number
+}
+
 export type AssurancePillar = 'Security' | 'Safety' | 'Reliability' | 'Fairness' | 'Domain'
 
 export enum EvaluationStatus {

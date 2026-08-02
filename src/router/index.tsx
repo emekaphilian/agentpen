@@ -5,6 +5,7 @@ import SystemDetailsPage from '../features/registry/SystemDetailsPage'
 import DashboardLayout from '../layouts/DashboardLayout'
 import OperationalDashboard from '../components/operational/OperationalDashboard'
 import EvaluationPage from '../features/evaluation/EvaluationPage'
+import DiscoveryPage from '../features/discovery/DiscoveryPage'
 import { AssuranceReportPage } from '../features/reports/AssuranceReportPage'
 
 export default function Router() {
@@ -13,6 +14,7 @@ export default function Router() {
       <Route path="/" element={<DashboardLayout><OperationalDashboard /></DashboardLayout>} />
       <Route path="/systems" element={<DashboardLayout><SystemsListPage /></DashboardLayout>} />
       <Route path="/systems/:systemId" element={<DashboardLayout><SystemDetailsPage /></DashboardLayout>} />
+      <Route path="/discovery" element={<DashboardLayout><DiscoveryPage /></DashboardLayout>} />
       <Route path="/evaluations" element={<DashboardLayout><EvaluationPage /></DashboardLayout>} />
       <Route path="/reports" element={<DashboardLayout><AssuranceReportPage /></DashboardLayout>} />
       <Route path="*" element={<Navigate to="/" replace />} />
