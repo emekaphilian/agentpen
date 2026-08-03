@@ -1,4 +1,6 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
+import LandingPage from '../features/overview/LandingPage'
+import ExecutiveDashboardPlaceholder from '../features/overview/ExecutiveDashboardPlaceholder'
 import HomePage from '../features/overview/HomePage'
 import SystemsListPage from '../features/registry/SystemsListPage'
 import SystemDetailsPage from '../features/registry/SystemDetailsPage'
@@ -13,7 +15,9 @@ import { AssuranceReportPage } from '../features/reports/AssuranceReportPage'
 export default function Router() {
   return (
     <Routes>
-      <Route path="/" element={<DashboardLayout><OperationalDashboard /></DashboardLayout>} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/operations" element={<DashboardLayout><OperationalDashboard /></DashboardLayout>} />
+      <Route path="/executive" element={<ExecutiveDashboardPlaceholder />} />
       <Route path="/systems" element={<DashboardLayout><SystemsListPage /></DashboardLayout>} />
       <Route path="/systems/:systemId" element={<DashboardLayout><SystemDetailsPage /></DashboardLayout>} />
       <Route path="/discovery" element={<DashboardLayout><DiscoveryPage /></DashboardLayout>} />
