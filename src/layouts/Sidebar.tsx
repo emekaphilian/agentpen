@@ -5,6 +5,7 @@ const navItems = [
   { label: 'Organizations', to: '/organizations', icon: '🏢' },
   { label: 'Policies', to: '/policies', icon: '🛡️' },
   { label: 'AI Systems', to: '/systems', icon: '📋' },
+  { label: 'Continuous Monitoring', to: '/monitoring', icon: '📡' },
   { label: 'Discovery', to: '/discovery', icon: '🔎' },
   { label: 'Evaluations', to: '/evaluations', icon: '🧪' }
 ]
