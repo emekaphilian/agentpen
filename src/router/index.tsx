@@ -17,7 +17,7 @@ export default function Router() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/operations" element={<DashboardLayout><OperationalDashboard /></DashboardLayout>} />
-      <Route path="/executive" element={<ExecutiveDashboardPlaceholder />} />
+      <Route path="/executive" element={<DashboardLayout><ExecutiveDashboardPlaceholder /></DashboardLayout>} />
       <Route path="/systems" element={<DashboardLayout><SystemsListPage /></DashboardLayout>} />
       <Route path="/systems/:systemId" element={<DashboardLayout><SystemDetailsPage /></DashboardLayout>} />
       <Route path="/discovery" element={<DashboardLayout><DiscoveryPage /></DashboardLayout>} />
