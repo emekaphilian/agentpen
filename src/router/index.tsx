@@ -12,6 +12,7 @@ import EvidencePage from '../features/evidence/EvidencePage'
 import AssurancePage from '../features/assurance/AssurancePage'
 import { AssuranceReportPage } from '../features/reports/AssuranceReportPage'
 import OrganizationsPage from '../features/organizations/OrganizationsPage'
+import PoliciesPage from '../features/policies/PoliciesPage'
 
 export default function Router() {
   return (
@@ -20,6 +21,7 @@ export default function Router() {
       <Route path="/operations" element={<DashboardLayout><OperationalDashboard /></DashboardLayout>} />
       <Route path="/executive" element={<DashboardLayout><ExecutiveDashboardPlaceholder /></DashboardLayout>} />
       <Route path="/organizations" element={<DashboardLayout><OrganizationsPage /></DashboardLayout>} />
+      <Route path="/policies" element={<DashboardLayout><PoliciesPage /></DashboardLayout>} />
       <Route path="/systems" element={<DashboardLayout><SystemsListPage /></DashboardLayout>} />
       <Route path="/systems/:systemId" element={<DashboardLayout><SystemDetailsPage /></DashboardLayout>} />
       <Route path="/discovery" element={<DashboardLayout><DiscoveryPage /></DashboardLayout>} />
